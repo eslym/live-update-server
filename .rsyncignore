@@ -2,7 +2,8 @@ DOCKER_ENV
 Dockerfile-php-build
 docker_tag
 output.log
-storage/
+storage/**/*
+!storage/.gitkeep
 .env
 .github
 .git
