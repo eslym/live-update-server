@@ -63,10 +63,13 @@ class VersionController extends Controller
 
         $data = $validator->validate();
 
-        $data['path'] = $data['bundle']->store('bundles', 'local');
+        /** @var UploadedFile $file */
+        $file = $data['bundle'];
+
+        $data['path'] = $file->store('bundles', 'local');
 
         openssl_sign(
-            $data['path'],
+            $file->get(),
             $signature,
             $project->private_key,
             OPENSSL_ALGO_SHA256
