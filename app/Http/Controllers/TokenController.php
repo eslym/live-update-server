@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Client;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
 
 class TokenController extends Controller
 {
     public function index(Request $request): Responsable
     {
-        /** @var User $user */
-        $user = $request->user();
+        /** @var Client $client */
+        $client = Client::first();
 
-        $tokens = $user->tokens()->select(['id', 'name', 'expires_at', 'last_used_at', 'created_at'])->paginate();
+        $tokens = $client->tokens()->select(['id', 'name', 'expires_at', 'last_used_at', 'created_at'])->paginate();
 
         return inertia('token/index', [
             'tokens' => $tokens,
-            'newToken' => $request->session()->get('newToken'),
+            'recentCreated' => $request->session()->get('recentCreated'),
         ]);
     }
 
@@ -29,18 +30,21 @@ class TokenController extends Controller
             'expires_at' => ['nullable', 'date'],
         ]);
 
-        /** @var User $user */
-        $user = $request->user();
+        /** @var Client $client */
+        $client = Client::first();
 
-        $token = $user->createToken($data['name'], expiresAt: $data['expires_at']);
+        $token = $client->createToken($data['name'], expiresAt: $data['expires_at'] ? Carbon::parse($data['expires_at']) : null);
 
-        return redirect()->route('token.index')->with('newToken', $token->plainTextToken);
+        return redirect()->route('token.index')->with('recentCreated', $token->plainTextToken);
     }
 
-    public function delete(Request $request, $tokenId): Response
+    public function delete($tokenId): Response
     {
-        $request->user()->tokens()->where('id', $tokenId)->delete();
+        Client::first()->tokens()->where('id', $tokenId)->delete();
 
-        return redirect()->route('token.index')->with('alert', 'Token deleted!');
+        return redirect()->route('token.index')->with('alert', [
+            'title' => 'Success',
+            'content' => 'Token revoked successfully',
+        ]);
     }
 }

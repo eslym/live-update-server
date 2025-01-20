@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
         $middleware->statefulApi();
+        $middleware->validateCsrfTokens(except: [
+            '/uploads',
+            '/uploads/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

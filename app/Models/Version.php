@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Better\Nanoid\Client;
+use App\Models\Concerns\HasNanoId;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $nanoid
@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $ios_requirements
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read \App\Models\Project $project
  * @method static Builder<static>|Version newModelQuery()
  * @method static Builder<static>|Version newQuery()
  * @method static Builder<static>|Version query()
@@ -29,24 +30,12 @@ use Illuminate\Support\Carbon;
  */
 class Version extends Model
 {
-    protected $fillable = ['name', 'project_id', 'path', 'signature', 'android_requirements', 'ios_requirements'];
+    use HasNanoId;
 
-    protected static function boot(): void
-    {
-        parent::boot();
-        self::creating(function ($model) {
-            $nanoid = new Client();
-            $model->nanoid = $nanoid->produce(21, true);
-        });
-    }
+    protected $fillable = ['name', 'project_id', 'path', 'signature', 'android_requirements', 'ios_requirements'];
 
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
-    }
-
-    public function getRouteKeyName(): string
-    {
-        return 'nanoid';
     }
 }

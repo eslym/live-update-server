@@ -38,13 +38,13 @@
                             </li>
                             <li class="contents">
                                 <a
-                                    href="/account"
+                                    href="/profile"
                                     class="menu-item"
-                                    class:menu-active={group === 'account'}
+                                    class:menu-active={group === 'profile'}
                                     use:inertia
                                 >
                                     <UserIcon class="h-5 w-5 opacity-75"/>
-                                    <span>Account</span>
+                                    <span>Profile</span>
                                 </a>
                             </li>
                             <li class="contents">

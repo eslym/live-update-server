@@ -6,15 +6,8 @@ export default defineConfig({
     plugins: [
         svelte(),
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: ['resources/css/app.css', 'resources/js/app.ts'],
             refresh: true,
         }),
     ],
-    build: {
-        rollupOptions: {
-            alias: {
-                '@': './resources/js',
-            },
-        }
-    }
 });

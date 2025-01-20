@@ -2,23 +2,29 @@
     import {useForm} from '@inertiajs/svelte';
     import FormErrors from "@/components/FormErrors.svelte";
 
-    const form = useForm({
+    let {APP_NAME}: { APP_NAME: string } = $props();
+
+    const form = useForm('login-form', {
         email: '',
         password: '',
     });
 
     function submit(ev: SubmitEvent) {
         ev.preventDefault();
-        $form.post('/login');
+        $form.post('/login', {
+            onError: () => {
+                $form.reset('password');
+            },
+        });
     }
 </script>
 
 <svelte:head>
-    <title>Login</title>
+    <title>Login | {APP_NAME}</title>
 </svelte:head>
 
 <div class="min-h-dvh w-full px-4 py-8 flex flex-col items-center justify-center">
-    <form method="post" class="form-group max-w-80" onsubmit={submit} novalidate>
+    <form method="post" action="/login" class="form-group max-w-80" onsubmit={submit} novalidate>
         <div class="form-field">
             <label for="email" class="form-label">Email</label>
             <input type="email" id="email" name="email" class="input max-w-full"

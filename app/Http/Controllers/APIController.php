@@ -17,7 +17,7 @@ class APIController extends Controller
     /**
      * @throws ValidationException
      */
-    public function version(Request $request, Project $project): Response
+    public function query(Request $request, Project $project): Response
     {
         $query = Validator::make($request->query->all(), [
             'platform' => ['required', 'string|in:ios,android'],
@@ -54,8 +54,27 @@ class APIController extends Controller
             'message' => 'Version found',
             'name' => $version->name,
             'id' => $version->id,
-            'url' => Storage::disk('public')->url($version->path),
+            'url' => route('api.download', [$project, $version]),
             'signature' => $version->signature,
         ]);
+    }
+
+    public function download(Project $project, Version $version): Response
+    {
+        return response()
+            ->download(
+                Storage::disk('local')
+                    ->path($version->path),
+                "$version->nanoid.zip",
+                [
+                    'X-Signature' => $version->signature,
+                ]
+            );
+    }
+
+    public function create(Request $request, Project $project): Response
+    {
+        app(VersionController::class)->create($request, $project);
+        return response()->json(['message' => 'Version created']);
     }
 }

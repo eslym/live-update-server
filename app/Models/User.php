@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Concerns\HasNanoId;
 use Database\Factories\UserFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,6 +21,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  *
  *
  * @property int $id
+ * @property string $nanoid
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -40,7 +42,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasNanoId, Notifiable;
 
     /**
      * The attributes that are mass assignable.

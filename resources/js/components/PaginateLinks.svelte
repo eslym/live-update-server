@@ -12,9 +12,9 @@
                 class="btn"
                 class:btn-primary={link.active}
                 use:inertia={{ preserveScroll: true, replace: true }}
-            >{link.label}</a>
+            >{@html link.label}</a>
         {:else}
-            <button class="btn" disabled>{link.label}</button>
+            <button class="btn" disabled>{@html link.label}</button>
         {/if}
     {/each}
 </div>

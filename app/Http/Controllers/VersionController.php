@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Version;
+use App\Rules\SemverConstraintRule;
 use App\Rules\UniqueRule;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -28,37 +29,58 @@ class VersionController extends Controller
                 UniqueRule::make(Version::class, 'name')
                     ->where('project_id', $project->id)
             ],
-            'ios_requirements' => ['nullable', 'string'],
-            'android_requirements' => ['nullable', 'string'],
-            'tus_upload_id' => ['required', 'string'],
+            'ios_requirements' => [
+                'required_without:android_requirements',
+                'nullable', 'string',
+                new SemverConstraintRule()
+            ],
+            'android_requirements' => [
+                'required_without:ios_requirements',
+                'nullable', 'string',
+                new SemverConstraintRule()
+            ],
+            'bundle_file' => ['required', 'string'],
+            'bundle' => [],
         ]);
 
         $validator->after(function (Validator $validator) {
-            $tusUploadId = $validator->getValue('tus_upload_id');
+            $tusUploadId = $validator->getValue('bundle_file');
             if (!$tusUploadId) return;
             try {
                 $file = TusFile::find($tusUploadId);
                 $size = Storage::disk($file->disk)->size($file->path);
                 if ($size !== $file->metadata['size']) {
-                    $validator->errors()->add('tus_upload_id', 'Incomplete upload');
+                    $validator->errors()->add('bundle_file', 'Incomplete upload');
                 }
                 $validator->setValue(
                     'bundle',
                     new UploadedFile(Storage::disk($file->disk)->path($file->path), 'bundle.zip')
                 );
             } catch (FileNotFoundException) {
-                $validator->errors()->add('tus_upload_id', 'Invalid upload');
+                $validator->errors()->add('bundle_file', 'Invalid upload');
             }
         });
 
         $data = $validator->validate();
 
-        $data['path'] = $data['bundle']->store('bundles', 'public');
+        $data['path'] = $data['bundle']->store('bundles', 'local');
+
+        openssl_sign(
+            $data['path'],
+            $signature,
+            $project->private_key,
+            OPENSSL_ALGO_SHA256
+        );
+
+        $data['signature'] = base64_encode($signature);
 
         $project->versions()->create($data);
 
         return redirect()->route('project.view', $project)
-            ->with('alert', 'Version created');
+            ->with('alert', [
+                'title' => 'Success',
+                'content' => 'Version created successfully',
+            ]);
     }
 
     public function update(Request $request, Project $project, Version $version): Response
@@ -71,23 +93,37 @@ class VersionController extends Controller
                     ->where('project_id', $project->id)
                     ->where('id', '!=', $version->id)
             ],
-            'ios_requirements' => ['nullable', 'string'],
-            'android_requirements' => ['nullable', 'string'],
+            'ios_requirements' => [
+                'required_without:android_requirements',
+                'nullable', 'string',
+                new SemverConstraintRule()
+            ],
+            'android_requirements' => [
+                'required_without:ios_requirements',
+                'nullable', 'string',
+                new SemverConstraintRule()
+            ],
         ]);
 
         $version->update($data);
 
         return redirect()->route('project.view', $project)
-            ->with('alert', 'Version updated');
+            ->with('alert', [
+                'title' => 'Success',
+                'content' => 'Version updated successfully',
+            ]);
     }
 
     public function delete(Project $project, Version $version): Response
     {
-        Storage::disk('public')->delete($version->path);
+        Storage::disk('local')->delete($version->path);
 
         $version->delete();
 
         return redirect()->route('project.view', $project)
-            ->with('alert', 'Version deleted');
+            ->with('alert', [
+                'title' => 'Success',
+                'content' => 'Version deleted successfully',
+            ]);
     }
 }
