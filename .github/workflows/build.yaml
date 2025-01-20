@@ -1,0 +1,31 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.44
+      - run: |
+          bun install
+          bun build
+          rm -rf resources/js resources/css
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - uses: php-actions/composer@v6
+        with:
+          php_version: '8.3'
+          php_extensions: openssl
+          dev: no
+      - run: tree .
