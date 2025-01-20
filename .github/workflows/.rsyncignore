@@ -1,0 +1,9 @@
+DOCKER_ENV
+Dockerfile-php-build
+storage/
+.env
+.github
+.git
+node_modules
+resources/js
+resources/css

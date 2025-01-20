@@ -16,7 +16,6 @@ jobs:
       - run: |
           bun install
           bun run build
-          rm -rf resources/js resources/css
       - uses: actions/cache@v4
         with:
           path: /tmp/composer-cache
@@ -28,4 +27,14 @@ jobs:
           php_version: '8.3'
           php_extensions: openssl
           dev: no
-      - run: tree .
+      - uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{secrets.DEPLOY_HOST}}
+          PORT: ${{secrets.DEPLOY_PORT}}
+          USER: ${{secrets.DEPLOY_USER}}
+          KEY: ${{secrets.DEPLOY_KEY}}
+          TARGET: ${{secrets.DEPLOY_PATH_PREVIEW}}
+          SOURCE: .
+          ARGS: -avz --delete --exclude-from=.rsyncignore
+          MODE: push
+          POST_SCRIPT: ${{ vars.PHP_BIN }} artisan optimize && ${{ vars.PHP_BIN }} artisan route:cache
