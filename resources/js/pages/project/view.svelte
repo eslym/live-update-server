@@ -276,6 +276,8 @@
                   $versionForm.clearErrors();
                   fileInput.value = '';
                   tusUpload?.abort(true);
+                  tusUpload = null;
+                  uploadProgress = null;
               }
           }}
           action="/projects/{project.nanoid}/versions" novalidate>
