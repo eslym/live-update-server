@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Version;
+use App\Rules\SemverRule;
 use Composer\Semver\Semver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -20,8 +21,8 @@ class APIController extends Controller
     public function query(Request $request, Project $project): Response
     {
         $query = Validator::make($request->query->all(), [
-            'platform' => ['required', 'string|in:ios,android'],
-            'version' => ['required', 'string|regex:/^\d+\.\d+\.\d+$/'],
+            'platform' => ['required', 'string', 'in:ios,android'],
+            'version' => ['required', 'string', new SemverRule()],
         ])->validate();
 
         $versions = $project->versions();
