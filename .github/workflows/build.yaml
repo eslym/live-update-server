@@ -37,4 +37,7 @@ jobs:
           SOURCE: .
           ARGS: -avz --delete --exclude-from=.rsyncignore
           MODE: push
-          POST_SCRIPT: ${{ vars.PHP_BIN }} artisan optimize && ${{ vars.PHP_BIN }} artisan route:cache
+          POST_SCRIPT: |
+            cd ${{secrets.DEPLOY_PATH}}
+            ${{ vars.PHP_BIN }} artisan optimize
+            ${{ vars.PHP_BIN }} artisan route:cache
