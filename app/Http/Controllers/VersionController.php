@@ -69,7 +69,7 @@ class VersionController extends Controller
         $data['path'] = $file->store('bundles', 'local');
 
         openssl_sign(
-            $file->get(),
+            Storage::disk('local')->get($data['path']),
             $signature,
             $project->private_key,
             OPENSSL_ALGO_SHA256
