@@ -33,7 +33,7 @@ jobs:
           PORT: ${{secrets.DEPLOY_PORT}}
           USER: ${{secrets.DEPLOY_USER}}
           KEY: ${{secrets.DEPLOY_KEY}}
-          TARGET: ${{secrets.DEPLOY_PATH_PREVIEW}}
+          TARGET: ${{secrets.DEPLOY_PATH}}
           SOURCE: .
           ARGS: -avz --delete --exclude-from=.rsyncignore
           MODE: push
