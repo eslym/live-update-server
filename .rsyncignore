@@ -3,7 +3,6 @@ Dockerfile-php-build
 docker_tag
 output.log
 storage/**/*
-!storage/.gitkeep
 .env
 .github
 .git
