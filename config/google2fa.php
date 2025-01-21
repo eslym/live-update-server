@@ -16,5 +16,5 @@ return [
 
     'debug' => (bool)env('GOOGLE2FA_DEBUG', false),
 
-    'enforce' => env('GOOGLE2FA_ENFORCE', false),
+    'enforce' => (bool)env('GOOGLE2FA_ENFORCE', false),
 ];

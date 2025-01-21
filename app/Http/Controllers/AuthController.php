@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Lib\Google2FA\Authenticator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +34,7 @@ class AuthController extends Controller
     public function logout(): Response
     {
         auth()->logout();
+        Authenticator::clearSession();
 
         return redirect()->to('/login')->with('alert', 'You have been logged out');
     }

@@ -21,6 +21,9 @@ class TwoFactorCodeRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        if (!preg_match('/^\d{6}$/', $value)) {
+            $fail("The :attribute must be a 6 digit number.");
+        }
         Authenticator::verify($value, $this->secret) || $fail("The :attribute is invalid.");
     }
 }

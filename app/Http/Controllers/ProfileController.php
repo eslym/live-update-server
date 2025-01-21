@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Rules\UniqueRule;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProfileController extends Controller
 {
+    public function index(): Responsable
+    {
+        return inertia('profile/index', [
+            'recovery_codes' => session()->get('recovery_codes'),
+        ]);
+    }
+
     public function update(Request $request): Response
     {
         $data = $request->validate([

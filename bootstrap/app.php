@@ -4,7 +4,9 @@ use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web(prepend: [
+        $middleware->web(append: [
             HandleInertiaRequests::class,
         ]);
         $middleware->statefulApi();
@@ -27,7 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (Throwable $exception) {
             $request = request();
             if ($request->wantsJson()) return null;
-            if ($exception instanceof HttpException) {
+            if ($exception instanceof HttpResponseException || $exception instanceof ValidationException) {
+                return null;
+            }
+            if ($exception instanceof HttpExceptionInterface) {
                 switch ($exception->getStatusCode()) {
                     case 404:
                         return inertia('errors/404');

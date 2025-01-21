@@ -18,8 +18,8 @@ export const config = new Proxy(src, {
     ENFORCE_2FA: boolean;
 };
 
-(async () => {
+export async function loadConfig() {
     const res = await fetch('/config.json');
     Object.assign(src, await res.json());
     notify();
-})();
+}

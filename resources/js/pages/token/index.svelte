@@ -84,7 +84,7 @@
                     <button onclick={async ()=>{
                         const res = await alert({
                             title: 'Revoke Token',
-                            content: 'Are you sure you want to revoke this project?',
+                            content: 'Are you sure you want to revoke this token?',
                             actions: {
                                 primary: 'Revoke',
                                 secondary: 'Cancel',

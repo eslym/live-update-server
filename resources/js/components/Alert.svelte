@@ -67,7 +67,7 @@
         <label class="modal-overlay" for="modal-alert-{id}"></label>
         <div class="modal-content flex flex-col gap-5" data-modal-id={id} ontransitionend={transitionEnd}>
             <label for="modal-alert-{id}" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</label>
-            <h2 class="text-xl">{alert.title}</h2>
+            <h2 class="text-xl pr-8">{alert.title}</h2>
             <span>{alert.content}</span>
             <div class="flex gap-3">
                 <button onclick={() => {

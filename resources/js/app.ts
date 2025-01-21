@@ -4,6 +4,7 @@ import {createInertiaApp, page, router} from '@inertiajs/svelte'
 import {mount} from 'svelte'
 import NProgress from 'nprogress';
 import Alert, {alert} from "@/components/Alert.svelte";
+import {loadConfig} from "@/lib/config";
 
 const pages = import.meta.glob('./pages/**/*.svelte')
 
@@ -36,14 +37,17 @@ page.subscribe(($page) => {
     }
 });
 
-createInertiaApp({
-    resolve: async (name) => {
-        return await pages[`./pages/${name}.svelte`]() as any
-    },
-    setup({el, App, props}) {
-        mount(App, {target: el!, props})
-    },
-    progress: false,
-}).then(() => {
+loadConfig().then(async () => {
+    await createInertiaApp({
+        resolve: async (name) => {
+            return await pages[`./pages/${name}.svelte`]() as any
+        },
+        setup({el, App, props}) {
+            mount(App, {target: el!, props})
+        },
+        progress: false,
+    });
     mount(Alert, {target: document.body});
+    document.getElementById('page-spinner')!.style.opacity = '0';
 });
+

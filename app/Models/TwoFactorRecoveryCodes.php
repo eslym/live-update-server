@@ -27,6 +27,10 @@ class TwoFactorRecoveryCodes extends Pivot
         'code'
     ];
 
+    protected $hidden = [
+        'code'
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

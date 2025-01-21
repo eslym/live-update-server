@@ -51,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/projects/{project}/versions/{version}', [VersionController::class, 'delete'])
             ->name('version.delete');
 
-        Route::inertia('/profile', 'profile/index')
+        Route::get('/profile', [ProfileController::class, 'index'])
             ->name('profile');
         Route::post('/profile', [ProfileController::class, 'update'])
             ->name('profile.update');
@@ -71,8 +71,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware([MustHave2FA::class])->group(function () {
-        Route::inertia('/2fa', '/2fa/verify')
+        Route::get('/2fa/verify', [TwoFactorAuthController::class, 'verifyPage'])
             ->name('profile.2fa.verify');
         Route::post('/2fa/verify', [TwoFactorAuthController::class, 'verify']);
+        Route::post('/2fa/disable', [TwoFactorAuthController::class, 'disable']);
     });
 });

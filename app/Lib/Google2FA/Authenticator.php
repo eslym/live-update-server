@@ -11,7 +11,10 @@ use PragmaRX\Google2FA\Google2FA;
  * @method static bool verifySession(string $otp)
  * @method static bool verify(string $otp, ?string $secret = null)
  * @method static bool isExpired()
+ * @method static void forceSession()
+ * @method static void clearSession()
  * @method static string getQRCodeUrl(string $company, string $holder, string $secret)
+ * @method static string getCurrentOTP(string $secret)
  * @method static array<string> generateRecoveryCodes(int $n = 10)
  */
 final class Authenticator
@@ -71,6 +74,16 @@ final class Authenticator
         return $ts->addMinutes($this->keepAlive)->isPast();
     }
 
+    private function _forceSession(): void
+    {
+        session()->put('google2fa_timestamp', time());
+    }
+
+    private function _clearSession(): void
+    {
+        session()->forget('google2fa_timestamp');
+    }
+
     private function _getQRCodeUrl(string $company, string $holder, string $secret): string
     {
         return $this->google2fa->getQRCodeUrl($company, $holder, $secret);
@@ -96,6 +109,11 @@ final class Authenticator
             $codes = [...$codes, ...$this->generateRecoveryCodes($n - $count)];
         }
         return $codes;
+    }
+
+    public function _getCurrentOTP(string $secret): string
+    {
+        return $this->google2fa->getCurrentOtp($secret);
     }
 
     public static function __callStatic($name, $arguments)
