@@ -94,7 +94,7 @@ class TwoFactorAuthController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if (RateLimiter::tooManyAttempts("disable-2fa:$user->id", 5)) {
+        if (RateLimiter::tooManyAttempts("password:$user->id", 5)) {
             return back()->with(['alert' => [
                 'title' => 'Too many attempts',
                 'content' => 'Please try again later.',
@@ -107,7 +107,7 @@ class TwoFactorAuthController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        RateLimiter::clear("disable-2fa:$user->id");
+        RateLimiter::clear("password:$user->id");
 
         $user->update([
             'google2fa_secret' => null,
@@ -117,8 +117,8 @@ class TwoFactorAuthController extends Controller
 
         return redirect()->route('profile')
             ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Two-factor authentication has been disabled.',
+                'title' => 'Too many attempts',
+                'content' => 'You have reached the maximum number of password verification attempts',
             ]);
     }
 }
