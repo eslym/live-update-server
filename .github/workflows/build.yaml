@@ -30,7 +30,7 @@ jobs:
       - uses: up9cloud/action-rsync@master
         env:
           HOST: ${{secrets.DEPLOY_HOST}}
-          PORT: ${{secrets.DEPLOY_PORT}}
+          PORT: ${{secrets.DEPLOY_PORT || 22}}
           USER: ${{secrets.DEPLOY_USER}}
           KEY: ${{secrets.DEPLOY_KEY}}
           TARGET: ${{secrets.DEPLOY_PATH}}
@@ -39,4 +39,5 @@ jobs:
           MODE: push
           POST_SCRIPT: |
             cd ${{secrets.DEPLOY_PATH}}
-            ${{ vars.PHP_BIN }} artisan optimize
+            ${{ vars.PHP_BIN || 'php' }} artisan optimize
+            ${{ vars.PHP_BIN || 'php' }} artisan migrate --force

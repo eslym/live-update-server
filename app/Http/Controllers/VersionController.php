@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Version;
+use App\Models\VersionResolution;
 use App\Rules\SemverConstraintRule;
 use App\Rules\UniqueRule;
+use Composer\Semver\Semver;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
@@ -77,7 +80,37 @@ class VersionController extends Controller
 
         $data['signature'] = base64_encode($signature);
 
-        $project->versions()->create($data);
+        /** @var Version $version */
+        $version = $project->versions()->create($data);
+
+        if ($data['ios_requirements']) {
+            /** @var Collection<VersionResolution> $resolutions */
+            $resolutions = $project->version_resolutions()
+                ->where('platform', 'ios')
+                ->get(['id', 'app_version']);
+            foreach ($resolutions as $resolution) {
+                if (Semver::satisfies($resolution->app_version, $data['ios_requirements'])) {
+                    $resolution->update([
+                        'version_id' => $version->id,
+                        'needs_reindex' => false,
+                    ]);
+                }
+            }
+        }
+        if ($data['android_requirements']) {
+            /** @var Collection<VersionResolution> $resolutions */
+            $resolutions = $project->version_resolutions()
+                ->where('platform', 'android')
+                ->get(['id', 'app_version']);
+            foreach ($resolutions as $resolution) {
+                if (Semver::satisfies($resolution->app_version, $data['android_requirements'])) {
+                    $resolution->update([
+                        'version_id' => $version->id,
+                        'needs_reindex' => false,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('project.view', $project)
             ->with('alert', [
@@ -107,6 +140,18 @@ class VersionController extends Controller
                 new SemverConstraintRule()
             ],
         ]);
+
+        if ($version->ios_requirements !== $data['ios_requirements']) {
+            $project->version_resolutions()
+                ->where('platform', 'ios')
+                ->update(['needs_reindex' => true]);
+        }
+
+        if ($version->android_requirements !== $data['android_requirements']) {
+            $project->version_resolutions()
+                ->where('platform', 'android')
+                ->update(['needs_reindex' => true]);
+        }
 
         $version->update($data);
 

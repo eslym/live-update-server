@@ -5,6 +5,7 @@ namespace App\Rules;
 use Closure;
 use Composer\Semver\Semver;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
 use UnexpectedValueException;
 
 class SemverRule implements ValidationRule
@@ -12,7 +13,7 @@ class SemverRule implements ValidationRule
     /**
      * Run the validation rule.
      *
-     * @param \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString $fail
+     * @param Closure(string, ?string=): PotentiallyTranslatedString $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

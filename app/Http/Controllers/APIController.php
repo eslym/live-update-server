@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Version;
+use App\Models\VersionResolution;
 use App\Rules\SemverRule;
-use Composer\Semver\Semver;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -25,31 +24,31 @@ class APIController extends Controller
             'version' => ['required', 'string', new SemverRule()],
         ])->validate();
 
-        $versions = $project->versions();
+        $resolution = $project->version_resolutions()
+            ->where('platform', $query['platform'])
+            ->where('app_version', $query['version'])
+            ->first();
 
-        if ($query['platform'] === 'ios') {
-            $versions->whereNotNull('ios_requirements');
-        } else {
-            $versions->whereNotNull('android_requirements');
-        }
-        $versions = $versions->orderByDesc('created_at')->get();
-
-        $version = null;
-
-        /** @var Collection<Version> $versions */
-        foreach ($versions as $v) {
-            if ($query['platform'] === 'ios' && Semver::satisfies($query['version'], $v->ios_requirements)) {
-                $version = $v;
-                break;
-            } elseif ($query['platform'] === 'android' && Semver::satisfies($query['version'], $v->android_requirements)) {
-                $version = $v;
-                break;
-            }
+        if (!$resolution) {
+            $resolution = new VersionResolution([
+                'project_id' => $project->id,
+                'platform' => $query['platform'],
+                'app_version' => $query['version'],
+                'needs_reindex' => true,
+            ]);
         }
 
-        if (!$version) {
+        if ($resolution->needs_reindex) {
+            $resolution->reIndex();
+        }
+
+        if (!$resolution->version_id) {
             return response()->json(['message' => 'No version found'], 404);
         }
+
+        $version = $resolution->version()->first([
+            'id', 'name', 'signature',
+        ]);
 
         return response()->json([
             'message' => 'Version found',

@@ -7,6 +7,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -23,6 +24,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read \App\Models\Project $project
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VersionResolution> $resolutions
+ * @property-read int|null $resolutions_count
  * @method static Builder<static>|Version newModelQuery()
  * @method static Builder<static>|Version newQuery()
  * @method static Builder<static>|Version query()
@@ -37,5 +40,10 @@ class Version extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function resolutions(): HasMany
+    {
+        return $this->hasMany(VersionResolution::class);
     }
 }

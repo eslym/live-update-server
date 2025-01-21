@@ -21,6 +21,8 @@ use Illuminate\Support\Carbon;
  * @property string $public_key
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Collection<int, \App\Models\VersionResolution> $version_resolutions
+ * @property-read int|null $version_resolutions_count
  * @property-read Collection<int, \App\Models\Version> $versions
  * @property-read int|null $versions_count
  * @method static Builder<static>|Project newModelQuery()
@@ -37,5 +39,10 @@ class Project extends Model
     public function versions(): HasMany
     {
         return $this->hasMany(Version::class);
+    }
+
+    public function version_resolutions(): HasMany
+    {
+        return $this->hasMany(VersionResolution::class);
     }
 }
