@@ -235,7 +235,7 @@
           }}
           action="/projects/{project.nanoid}" novalidate>
         <label for="modal-edit" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</label>
-        <h2 class="text-xl">Create Project</h2>
+        <h2 class="text-xl">Update Project</h2>
         <div class="form-group">
             <div class="form-field">
                 <label for="name" class="form-label">Name <span class="text-error">*</span></label>
@@ -294,7 +294,7 @@
             </div>
             <div class="form-field">
                 <span class="form-label">Bundle File <span class="text-error">*</span></span>
-                <input type="file" id="bundle" class="input-file max-w-full"
+                <input type="file" id="bundle" class="input-file input-file-xl max-w-full"
                        bind:this={fileInput}
                        class:input-file-error={$versionForm.errors.bundle_file}
                        class:hidden={uploadProgress !== null}
@@ -332,7 +332,12 @@
                 />
                 <div class="flex flex-row items-center gap-2" class:hidden={uploadProgress === null}>
                     <progress class="progress progress-flat-primary w-0 flex-grow" value={uploadProgress} max="100"
+                              class:hidden={uploadProgress === 100}
                     ></progress>
+                    <div class="w-0 flex-grow px-2 font-mono text-xs text-content2"
+                         class:hidden={uploadProgress !== 100}>
+                        {$versionForm.bundle_file}.zip
+                    </div>
                     <button type="button" class="btn btn-circle"
                             onclick={() => {
                                 tusUpload?.abort(true);
@@ -348,7 +353,7 @@
                 <FormErrors error={$versionForm.errors.bundle_file}/>
             </div>
             <div class="form-field">
-                <label for="android_requirements" class="form-label">Android Requirements</label>
+                <label for="android_requirements" class="form-label">Android Requirements (App Version)</label>
                 <input type="text" id="android_requirements" name="android_requirements" class="input max-w-full"
                        bind:value={$versionForm.android_requirements}
                        class:input-error={$versionForm.errors.android_requirements}
@@ -357,7 +362,7 @@
                 <FormErrors error={$versionForm.errors.android_requirements}/>
             </div>
             <div class="form-field">
-                <label for="ios_requirements" class="form-label">iOS Requirements</label>
+                <label for="ios_requirements" class="form-label">iOS Requirements (App Version)</label>
                 <input type="text" id="ios_requirements" name="ios_requirements" class="input max-w-full"
                        bind:value={$versionForm.ios_requirements}
                        class:input-error={$versionForm.errors.ios_requirements}
@@ -391,7 +396,7 @@
                 <FormErrors error={$editVersionForm.errors.name}/>
             </div>
             <div class="form-field">
-                <label for="edit_android_requirements" class="form-label">Android Requirements</label>
+                <label for="edit_android_requirements" class="form-label">Android Requirements (App Version)</label>
                 <input type="text" id="edit_android_requirements" name="android_requirements" class="input max-w-full"
                        bind:value={$editVersionForm.android_requirements}
                        class:input-error={$editVersionForm.errors.android_requirements}
@@ -400,7 +405,7 @@
                 <FormErrors error={$editVersionForm.errors.android_requirements}/>
             </div>
             <div class="form-field">
-                <label for="edit_ios_requirements" class="form-label">iOS Requirements</label>
+                <label for="edit_ios_requirements" class="form-label">iOS Requirements (App Version)</label>
                 <input type="text" id="edit_ios_requirements" name="ios_requirements" class="input max-w-full"
                        bind:value={$editVersionForm.ios_requirements}
                        class:input-error={$editVersionForm.errors.ios_requirements}
