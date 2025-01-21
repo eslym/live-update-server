@@ -1,12 +1,11 @@
 <?php
 
 use App\Http\Middleware\HandleInertiaRequests;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,20 +25,25 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (Throwable $exception) {
+        function inertiaResponse(\Inertia\Response $responsable, $status): Response
+        {
             $request = request();
-            if ($request->wantsJson()) return null;
-            if ($exception instanceof HttpResponseException || $exception instanceof ValidationException) {
-                return null;
+            $response = $responsable->toResponse($request);
+            $response->setStatusCode($status);
+            return $response;
+        }
+
+        $exceptions->respond(function (Response $response) {
+            if (
+                !$response->headers->has('content-type') ||
+                !str_starts_with($response->headers->get('content-type'), 'text/html')
+            ) {
+                return $response;
             }
-            if ($exception instanceof HttpExceptionInterface) {
-                switch ($exception->getStatusCode()) {
-                    case 404:
-                        return inertia('errors/404');
-                    case 500:
-                        return inertia('errors/500');
-                }
-            }
-            return config('app.debug') ? null : inertia('errors/500');
+            return match ($response->getStatusCode()) {
+                404 => inertiaResponse(inertia('errors/404'), 404),
+                500 => config('app.debug') ? $response : inertiaResponse(inertia('errors/500'), 500),
+                default => $response,
+            };
         });
     })->create();

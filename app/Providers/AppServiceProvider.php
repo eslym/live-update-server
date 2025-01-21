@@ -21,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (file_exists($path = public_path('build/manifest.json'))) {
+            Inertia::version(md5_file($path));
+        }
         Password::defaults(function () {
             return Password::min(8)
                 ->letters()

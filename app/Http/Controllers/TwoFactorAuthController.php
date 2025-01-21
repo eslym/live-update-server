@@ -80,7 +80,10 @@ class TwoFactorAuthController extends Controller
 
         if (!Authenticator::verifySession($data['otp'])) {
             return redirect()->back()
-                ->with('alert', 'Invalid two-factor code.');
+                ->with('alert', [
+                    'title' => 'Invalid code',
+                    'content' => 'The code you entered is invalid.',
+                ]);
         }
 
         return redirect()->intended();
