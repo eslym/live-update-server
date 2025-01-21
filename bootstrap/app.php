@@ -31,8 +31,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 switch ($exception->getStatusCode()) {
                     case 404:
                         return inertia('errors/404');
+                    case 500:
+                        return inertia('errors/500');
                 }
             }
-            return null;
+            return config('app.debug') ? null : inertia('errors/500');
         });
     })->create();

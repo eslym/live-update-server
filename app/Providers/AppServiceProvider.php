@@ -21,12 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Inertia::version(static function () {
-            if (file_exists($path = public_path('build/manifest.json'))) {
-                return md5_file($path);
-            }
-            return null;
-        });
         Inertia::share('APP_NAME', config('app.name'));
         Password::defaults(function () {
             return Password::min(8)
