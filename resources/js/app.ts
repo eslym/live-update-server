@@ -7,8 +7,12 @@ import Alert, {alert} from "@/components/Alert.svelte";
 
 const pages = import.meta.glob('./pages/**/*.svelte')
 
-router.on('start', () => NProgress.start());
+let timeout: number | undefined = undefined;
+
+router.on('start', () => timeout = setTimeout(NProgress.start, 250));
+
 router.on('finish', (event) => {
+    clearTimeout(timeout);
     if (event.detail.visit.completed) {
         NProgress.done()
     } else if (event.detail.visit.interrupted) {
@@ -18,6 +22,12 @@ router.on('finish', (event) => {
         NProgress.remove()
     }
 });
+
+router.on('progress', (event) => {
+    if (event.detail.progress?.percentage) {
+        NProgress.set((event.detail.progress.percentage / 100) * 0.9)
+    }
+})
 
 page.subscribe(($page) => {
     if ($page?.props?.alert) {

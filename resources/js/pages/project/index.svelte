@@ -9,8 +9,9 @@
     import {alert} from '@/components/Alert.svelte';
     import moment from "moment";
     import {EyeIcon, Delete01Icon} from "hugeicons-svelte";
+    import {config} from "@/lib/config";
 
-    let {projects, APP_NAME}: {
+    let {projects}: {
         projects: Pagination<{
             id: number,
             nanoid: string,
@@ -19,8 +20,7 @@
             versions: [{
                 name: string,
             } | undefined]
-        }>,
-        APP_NAME: string
+        }>
     } = $props();
 
     let editModal = $state(false);
@@ -42,7 +42,7 @@
 </script>
 
 <svelte:head>
-    <title>Projects | {APP_NAME}</title>
+    <title>Projects | {config.APP_NAME}</title>
 </svelte:head>
 
 <div class="w-full flex flex-row">

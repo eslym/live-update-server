@@ -1,11 +1,10 @@
 <script lang="ts">
     import {inertia} from "@inertiajs/svelte";
-
-    let {APP_NAME}: { APP_NAME: string } = $props();
+    import {config} from "@/lib/config";
 </script>
 
 <svelte:head>
-    <title>404 Not Found | { APP_NAME }</title>
+    <title>404 Not Found | { config.APP_NAME }</title>
 </svelte:head>
 
 <main

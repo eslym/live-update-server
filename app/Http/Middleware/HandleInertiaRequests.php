@@ -40,7 +40,10 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'user' => fn() => $request->user()
-                ? $request->user()->only('id', 'nanoid', 'name', 'email')
+                ? [
+                    ...$request->user()->only('id', 'nanoid', 'name', 'email'),
+                    '2fa_enabled' => $request->user()->google2fa_secret !== null,
+                ]
                 : null,
             'route' => fn() => $request->route()->getName(),
             'alert' => fn() => $request->session()->get('alert'),

@@ -1,11 +1,10 @@
 <script lang="ts">
     import {inertia} from "@inertiajs/svelte";
-
-    let {APP_NAME}: { APP_NAME: string } = $props();
+    import {config} from "@/lib/config";
 </script>
 
 <svelte:head>
-    <title>500 Internal Server Error | { APP_NAME }</title>
+    <title>500 Internal Server Error | { config.APP_NAME }</title>
 </svelte:head>
 
 <main

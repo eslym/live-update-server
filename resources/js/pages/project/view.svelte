@@ -10,13 +10,13 @@
     import {Delete01Icon, Download01Icon, MultiplicationSignIcon, PencilEdit01Icon} from "hugeicons-svelte";
     import PaginateLinks from "@/components/PaginateLinks.svelte";
     import {alert} from "@/components/Alert.svelte";
+    import {config} from "@/lib/config";
 
     let fileInput: HTMLInputElement = $state(null as any);
     let uploadProgress: number | null = $state(null);
     let tusUpload: Upload | null = $state(null);
 
-    let {project, versions, latestRequirements, APP_NAME}: {
-        APP_NAME: string,
+    let {project, versions, latestRequirements}: {
         project: {
             id: number,
             nanoid: string,
@@ -102,7 +102,7 @@
 </script>
 
 <svelte:head>
-    <title>Project: {project.name} | {APP_NAME}</title>
+    <title>Project: {project.name} | {config.APP_NAME}</title>
 </svelte:head>
 
 <div class="w-full flex flex-row gap-4">

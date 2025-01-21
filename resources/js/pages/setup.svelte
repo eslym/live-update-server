@@ -1,8 +1,7 @@
 <script lang="ts">
     import {useForm} from '@inertiajs/svelte';
     import FormErrors from "@/components/FormErrors.svelte";
-
-    let {APP_NAME}: { APP_NAME: string } = $props();
+    import {config} from "@/lib/config";
 
     const form = useForm({
         name: '',
@@ -18,7 +17,7 @@
 </script>
 
 <svelte:head>
-    <title>Setup | {APP_NAME}</title>
+    <title>Setup | {config.APP_NAME}</title>
 </svelte:head>
 
 <div class="min-h-dvh w-full px-4 py-8 flex flex-col items-center justify-center">

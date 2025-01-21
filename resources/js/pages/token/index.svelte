@@ -10,9 +10,9 @@
     import PaginateLinks from "@/components/PaginateLinks.svelte";
     import {router, useForm} from "@inertiajs/svelte";
     import FormErrors from "@/components/FormErrors.svelte";
+    import {config} from "@/lib/config";
 
-    let {tokens, recentCreated, APP_NAME}: {
-        APP_NAME: string,
+    let {tokens, recentCreated}: {
         tokens: Pagination<{
             id: number,
             name: string,
@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head>
-    <title>Tokens | {APP_NAME}</title>
+    <title>Tokens | {config.APP_NAME}</title>
 </svelte:head>
 
 <div class="w-full flex flex-row">

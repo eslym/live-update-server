@@ -5,8 +5,9 @@
 <script lang="ts">
     import {useForm} from "@inertiajs/svelte";
     import FormErrors from "@/components/FormErrors.svelte";
+    import {config} from "@/lib/config";
 
-    let {user, APP_NAME}: { user: { name: string, email: string }, APP_NAME: string } = $props();
+    let {user}: { user: { name: string, email: string } } = $props();
 
     const form = useForm({
         name: user.name,
@@ -41,7 +42,7 @@
 </script>
 
 <svelte:head>
-    <title>Profile | {APP_NAME}</title>
+    <title>Profile | {config.APP_NAME}</title>
 </svelte:head>
 
 <div class="w-full px-4 py-8 flex flex-col items-center justify-center">

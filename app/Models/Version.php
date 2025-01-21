@@ -5,13 +5,14 @@ namespace App\Models;
 use App\Models\Concerns\HasNanoId;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $nanoid
@@ -23,8 +24,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $ios_requirements
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\Project $project
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VersionResolution> $resolutions
+ * @property-read Project $project
+ * @property-read Collection<int, VersionResolution> $resolutions
  * @property-read int|null $resolutions_count
  * @method static Builder<static>|Version newModelQuery()
  * @method static Builder<static>|Version newQuery()

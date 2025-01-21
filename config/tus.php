@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\TwoFactorAuth;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +34,7 @@ return [
     | Default endpoint middlewares
     |--------------------------------------------------------------------------
     */
-    'middleware' => ['web', 'auth:sanctum'],
+    'middleware' => ['web', 'auth:sanctum', TwoFactorAuth::class],
 
     /*
     |--------------------------------------------------------------------------
