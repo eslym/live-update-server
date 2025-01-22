@@ -5,6 +5,8 @@ declare global {
         axios: typeof axios;
     }
 
+    type Timeout = ReturnType<typeof setTimeout>;
+
     interface Pagination<T> {
         current_page: number;
         data: T[];

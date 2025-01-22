@@ -5,10 +5,11 @@ import {mount} from 'svelte'
 import NProgress from 'nprogress';
 import Alert, {alert} from "@/components/Alert.svelte";
 import {loadConfig} from "@/lib/config";
+import {initShiki} from "@/lib/shiki";
 
 const pages = import.meta.glob('./pages/**/*.svelte')
 
-let timeout: number | undefined = undefined;
+let timeout: Timeout | undefined = undefined;
 
 router.on('start', () => timeout = setTimeout(NProgress.start, 250));
 
@@ -37,7 +38,10 @@ page.subscribe(($page) => {
     }
 });
 
-loadConfig().then(async () => {
+Promise.all([
+    loadConfig(),
+    initShiki()
+]).then(async () => {
     await createInertiaApp({
         resolve: async (name) => {
             return await pages[`./pages/${name}.svelte`]() as any

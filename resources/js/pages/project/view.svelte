@@ -11,6 +11,7 @@
     import PaginateLinks from "@/components/PaginateLinks.svelte";
     import {alert} from "@/components/Alert.svelte";
     import {config} from "@/lib/config";
+    import CodeSnippet from "@/components/CodeSnippet.svelte";
 
     let fileInput: HTMLInputElement = $state(null as any);
     let uploadProgress: number | null = $state(null);
@@ -41,6 +42,7 @@
 
     let editModal = $state(false);
     let versionModal = $state(false);
+    let codeSnippetModal = $state(false);
 
     const editForm = useForm({
         name: project.name,
@@ -109,6 +111,7 @@
     <h1 class="text-3xl font-semibold">Project: {project.name}</h1>
     <label for="modal-version" class="ml-auto btn btn-solid-primary">New Version</label>
     <label for="modal-edit" class="btn btn-secondary">Edit Project</label>
+    <label for="modal-code-snippet" class="btn btn-success">Example Code</label>
 </div>
 
 <div class="form-group mt-4 max-w-[48rem]">
@@ -419,4 +422,17 @@
             <label for="modal-edit-version" class="btn btn-block">Cancel</label>
         </div>
     </form>
+</div>
+
+<input class="modal-state" id="modal-code-snippet" type="checkbox" bind:checked={codeSnippetModal}/>
+<div class="modal">
+    <label class="modal-overlay" for="modal-code-snippet"></label>
+    <div class="modal-content flex flex-col gap-5 w-[48rem] max-w-full">
+        <label for="modal-code-snippet" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</label>
+        <h2 class="text-xl">Example Code</h2>
+            <CodeSnippet endpoint={apiEndpoint}/>
+        <div class="flex gap-3">
+            <label for="modal-code-snippet" class="btn btn-block">Close</label>
+        </div>
+    </div>
 </div>

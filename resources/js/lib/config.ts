@@ -1,4 +1,4 @@
-import {createSubscriber} from "svelte/reactivity";
+import {createSubscriber, MediaQuery} from "svelte/reactivity";
 
 let notify = () => {
 };
@@ -17,6 +17,8 @@ export const config = new Proxy(src, {
     APP_NAME: string;
     ENFORCE_2FA: boolean;
 };
+
+export const dark = new MediaQuery('prefers-color-scheme: dark');
 
 export async function loadConfig() {
     const res = await fetch('/config.json');
