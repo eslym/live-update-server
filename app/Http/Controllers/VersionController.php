@@ -155,7 +155,7 @@ class VersionController extends Controller
 
         $version->update($data);
 
-        return redirect()->route('project.view', $project)
+        return redirect()->back()
             ->with('alert', [
                 'title' => 'Success',
                 'content' => 'Version updated successfully',
@@ -168,7 +168,7 @@ class VersionController extends Controller
 
         $version->delete();
 
-        return redirect()->route('project.view', $project)
+        return redirect()->back()
             ->with('alert', [
                 'title' => 'Success',
                 'content' => 'Version deleted successfully',

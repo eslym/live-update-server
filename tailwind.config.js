@@ -8,14 +8,14 @@ export default {
         './storage/framework/views/*.php',
         './resources/**/*.blade.php',
         './resources/**/*.js',
-        './resources/**/*.svelte',
+        './resources/**/*.svelte'
     ],
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
-            },
-        },
+                sans: ['Figtree', ...defaultTheme.fontFamily.sans]
+            }
+        }
     },
-    plugins: [rippleui],
+    plugins: [rippleui]
 };

@@ -1,5 +1,5 @@
-import {defineConfig} from 'vite';
-import {svelte} from '@sveltejs/vite-plugin-svelte';
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
@@ -7,7 +7,7 @@ export default defineConfig({
         svelte(),
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.ts'],
-            refresh: true,
-        }),
-    ],
+            refresh: true
+        })
+    ]
 });

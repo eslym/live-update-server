@@ -10,7 +10,7 @@ use PragmaRX\Google2FA\Google2FA;
  * @method static string generateSecret()
  * @method static bool verifySession(string $otp)
  * @method static bool verify(string $otp, ?string $secret = null)
- * @method static bool isExpired()
+ * @method static int isExpired()
  * @method static void forceSession()
  * @method static void clearSession()
  * @method static string getQRCodeUrl(string $company, string $holder, string $secret)
@@ -19,6 +19,10 @@ use PragmaRX\Google2FA\Google2FA;
  */
 final class Authenticator
 {
+    public const NOT_EXPIRED = 0;
+    public const EXPIRED = 1;
+    public const NO_SESSION = -1;
+
     public function __construct(private Google2FA $google2fa, private int $keyLength, private int $keepAlive)
     {
     }
@@ -67,11 +71,14 @@ final class Authenticator
         return $this->google2fa->verifyKey($secret, $otp);
     }
 
-    private function _isExpired(): bool
+    private function _isExpired(): int
     {
         $last = session()->get('google2fa_timestamp', 0);
+        if ($last === 0) {
+            return -1;
+        }
         $ts = Carbon::createFromTimestamp($last);
-        return $ts->addMinutes($this->keepAlive)->isPast();
+        return (int)$ts->addMinutes($this->keepAlive)->isPast();
     }
 
     private function _forceSession(): void

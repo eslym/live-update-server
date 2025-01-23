@@ -117,8 +117,8 @@ class TwoFactorAuthController extends Controller
 
         return redirect()->route('profile')
             ->with('alert', [
-                'title' => 'Too many attempts',
-                'content' => 'You have reached the maximum number of password verification attempts',
+                'title' => 'Success',
+                'content' => 'Two-factor authentication has been disabled.',
             ]);
     }
 }

@@ -6,7 +6,7 @@ to [Capawesome Cloud](https://cloud.capawesome.io/).
 ## Requirements
 
 | Name                  | Version   |
-|-----------------------|-----------|
+| --------------------- | --------- |
 | PHP                   | >= 8.3    |
 | Composer              | >= 2.1    |
 | [Bun](https://bun.sh) | >= 1.1.39 |
@@ -27,6 +27,7 @@ php artisan key:generate
 php artisan migrate
 php artisan optimize # Optional but recommended
 ```
+
 Navigate to `https://your-domain.com/setup` to set up account.
 
 ## Development

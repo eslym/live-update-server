@@ -1,7 +1,7 @@
 <script lang="ts">
-    import {slide} from 'svelte/transition';
+    import { slide } from 'svelte/transition';
 
-    let {error}: { error?: string | null } = $props();
+    let { error }: { error?: string | null } = $props();
 </script>
 
 {#if error}

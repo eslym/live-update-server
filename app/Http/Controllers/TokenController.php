@@ -42,7 +42,7 @@ class TokenController extends Controller
     {
         Client::first()->tokens()->where('id', $tokenId)->delete();
 
-        return redirect()->route('token.index')->with('alert', [
+        return redirect()->back()->with('alert', [
             'title' => 'Success',
             'content' => 'Token revoked successfully',
         ]);

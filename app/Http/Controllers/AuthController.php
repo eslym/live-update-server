@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Lib\Google2FA\Authenticator;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
@@ -36,7 +37,12 @@ class AuthController extends Controller
         if (auth()->attempt($credentials)) {
             RateLimiter::clear('login:' . $request->ip());
 
-            return redirect()->to('/');
+            /** @var User $user */
+            $user = auth()->user();
+
+            return $user->google2fa_secret ?
+                redirect()->route('profile.2fa.verify') :
+                redirect()->intended();
         }
 
         $validator->errors()->add('email', 'Invalid credentials');

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import {shiki} from "@/lib/shiki";
-    import {dark} from "@/lib/config";
-    import {Copy01Icon} from "hugeicons-svelte";
+    import { shiki } from '@/lib/shiki';
+    import { dark } from '@/lib/config';
+    import { Copy01Icon } from 'hugeicons-svelte';
 
-    let {endpoint}: { endpoint: string } = $props();
+    let { endpoint }: { endpoint: string } = $props();
 
     let code = $derived(`import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { LiveUpdate } from '@capawesome/live-update';
@@ -44,18 +44,26 @@ if (Capacitor.isNativePlatform()) {
         });
 }
 `);
-    let highlighted = $derived(shiki.codeToHtml(code, {
-        lang: 'typescript',
-        theme: dark.current ? 'github-dark' : 'github-light',
-    }).replace('<pre class="', '<pre class="h-0 min-h-0 flex-grow overflow-auto '));
+    let highlighted = $derived(
+        shiki
+            .codeToHtml(code, {
+                lang: 'typescript',
+                theme: dark.current ? 'github-dark' : 'github-light'
+            })
+            .replace('<pre class="', '<pre class="h-0 min-h-0 flex-grow overflow-auto ')
+    );
 </script>
 
-<div class="textarea max-w-full font-mono h-[60dvh] overflow-hidden w-full p-0 flex flex-col relative">
+<div
+    class="textarea max-w-full font-mono h-[60dvh] overflow-hidden w-full p-0 flex flex-col relative"
+>
     {@html highlighted}
-    <button type="button" class="btn btn-xs btn-secondary absolute right-6 top-2 pr-3"
-            onclick={() => navigator.clipboard.writeText(code)}
+    <button
+        type="button"
+        class="btn btn-xs btn-secondary absolute right-6 top-2 pr-3"
+        onclick={() => navigator.clipboard.writeText(code)}
     >
-        <Copy01Icon size={12} class="inline-block mr-2"/>
+        <Copy01Icon size={12} class="inline-block mr-2" />
         Copy
     </button>
 </div>
@@ -77,7 +85,7 @@ if (Capacitor.isNativePlatform()) {
             }
 
             &::before {
-                @apply pl-0.5 pr-3 text-content3 bg-gray-4 border-gray-6/50 border-r-2;
+                @apply border-r-2 border-gray-6/50 bg-gray-4 pl-0.5 pr-3 text-content3;
                 position: sticky;
                 left: 0;
                 content: counter(step);

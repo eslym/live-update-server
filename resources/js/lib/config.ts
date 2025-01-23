@@ -1,11 +1,9 @@
-import {createSubscriber, MediaQuery} from "svelte/reactivity";
+import { createSubscriber, MediaQuery } from 'svelte/reactivity';
 
-let notify = () => {
-};
+let notify = () => {};
 const subscribe = createSubscriber((update) => {
     notify = update;
-    return () => notify = () => {
-    };
+    return () => (notify = () => {});
 });
 const src = {};
 export const config = new Proxy(src, {

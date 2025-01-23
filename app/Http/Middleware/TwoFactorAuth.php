@@ -29,12 +29,22 @@ class TwoFactorAuth
             return $next($request);
         }
 
-        if (Authenticator::isExpired()) {
+        if ($check = Authenticator::isExpired()) {
+            session()->put('url.intended', $request->fullUrl());
             return redirect()->route('profile.2fa.verify')
-                ->with('alert', [
-                    'title' => 'Two-factor authentication expired',
-                    'content' => 'You need to verify your identity again in order to continue.',
-                ]);
+                ->with('alert',
+                    match ($check) {
+                        Authenticator::EXPIRED => [
+                            'title' => 'Two-factor authentication expired',
+                            'content' => 'You need to verify your identity again in order to continue.',
+                        ],
+                        Authenticator::NO_SESSION => [
+                            'title' => 'Two-factor authentication required',
+                            'content' => 'You need to verify your identity in order to continue.',
+                        ],
+                        default => [],
+                    }
+                );
         }
 
         return $next($request);
