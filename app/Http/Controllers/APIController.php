@@ -67,6 +67,9 @@ class APIController extends Controller
                     ->path($version->path),
                 "$version->nanoid.zip",
                 [
+                    'Cache-Control' => 'public, max-age=604800',
+                    'Content-Type' => 'application/zip',
+                    'ETag' => json_encode($version->signature),
                     'X-Signature' => $version->signature,
                 ]
             );
