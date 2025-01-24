@@ -1,14 +1,20 @@
 <script lang="ts">
     import { inertia } from '@inertiajs/svelte';
 
-    let { links }: { links: PaginationLink[] } = $props();
+    let {
+        links,
+        url = (url) => url
+    }: {
+        links: PaginationLink[];
+        url?: (url: URL) => URL;
+    } = $props();
 </script>
 
 <div class="btn-group">
     {#each links as link}
         {#if link.url}
             <a
-                href={link.url}
+                href={url(new URL(link.url, window.location.href)).href}
                 class="btn"
                 class:btn-primary={link.active}
                 use:inertia={{ preserveState: true, preserveScroll: true, replace: true }}

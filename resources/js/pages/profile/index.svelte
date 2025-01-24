@@ -191,10 +191,10 @@
             You need to enter your password to disable two-factor authentication.
         </p>
         <div class="form-field">
-            <label for="password" class="form-label">Password</label>
+            <label for="disable-2fa-password" class="form-label">Password</label>
             <input
                 type="password"
-                id="password"
+                id="disable-2fa-password"
                 name="password"
                 class="input max-w-full"
                 bind:value={$disable2faForm.password}

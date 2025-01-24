@@ -34,6 +34,12 @@ router.on('progress', (event) => {
 page.subscribe(($page) => {
     if ($page?.props?.alert) {
         alert($page.props.alert as any).then(() => {});
+        router.replace({
+            props: (props) => {
+                delete props.alert;
+                return props;
+            }
+        });
     }
 });
 
