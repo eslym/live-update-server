@@ -214,9 +214,10 @@
             </thead>
             <tbody>
                 {#each versions.data as version (version.id)}
+                    {@const timestamp = moment(version.created_at).fromNow()}
                     <tr class="min-h-0 overflow-hidden">
                         <td>{version.name}</td>
-                        <td class="w-0 min-w-max">{moment(version.created_at).fromNow()}</td>
+                        <td class="w-0 min-w-max">{timestamp}</td>
                         <td class="w-0 min-w-max">{version.android_requirements || 'N/A'}</td>
                         <td class="w-0 min-w-max">{version.ios_requirements || 'N/A'}</td>
                         <td class="w-0 min-w-max">

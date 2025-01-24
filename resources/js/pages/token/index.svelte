@@ -81,9 +81,10 @@
     </thead>
     <tbody>
         {#each tokens.data as token}
+            {@const timestamp = moment(token.created_at).fromNow()}
             <tr>
                 <td>{token.name}</td>
-                <td>{moment(token.created_at).fromNow()}</td>
+                <td>{timestamp}</td>
                 <td>{token.expires_at ? moment(token.expires_at).calendar() : 'Never'}</td>
                 <td>{token.last_used_at ? moment(token.last_used_at).fromNow() : 'Never'}</td>
                 <td class="text-right">
@@ -116,7 +117,7 @@
             </tr>
         {:else}
             <tr>
-                <td colspan="5" class="!text-center !text-content3 !text-lg"> No Tokens </td>
+                <td colspan="5" class="!text-center !text-content3 !text-lg"> No Tokens</td>
             </tr>
         {/each}
     </tbody>

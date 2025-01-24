@@ -66,9 +66,10 @@
     </thead>
     <tbody>
         {#each projects.data as project (project.id)}
+            {@const timestamp = moment(project.created_at).fromNow()}
             <tr>
                 <td>{project.name}</td>
-                <td class="w-0 min-w-max">{moment(project.created_at).fromNow()}</td>
+                <td class="w-0 min-w-max">{timestamp}</td>
                 <td class="w-0 min-w-max">{project.versions[0]?.name ?? 'No Versions'}</td>
                 <td class="w-0 !min-w-max">
                     <div class="btn-group min-w-max">
