@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Concerns\HasNanoId;
 use Database\Factories\UserFactory;
 use Eloquent;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,6 +27,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
+ * @property bool $is_superadmin
  * @property string $password
  * @property string|null $google2fa_secret
  * @property string|null $remember_token
@@ -33,11 +35,11 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property Carbon|null $updated_at
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read Collection<int, TwoFactorRecoveryCodes> $recovery_codes
+ * @property-read Collection<int, \App\Models\TwoFactorRecoveryCodes> $recovery_codes
  * @property-read int|null $recovery_codes_count
  * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
- * @method static UserFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static Builder<static>|User newModelQuery()
  * @method static Builder<static>|User newQuery()
  * @method static Builder<static>|User query()
@@ -46,7 +48,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasNanoId, Notifiable;
+    use HasApiTokens, HasFactory, HasNanoId, Notifiable, CanResetPassword;
 
     /**
      * The attributes that are mass assignable.
@@ -58,6 +60,7 @@ class User extends Authenticatable
         'email',
         'password',
         'google2fa_secret',
+        'is_superadmin',
     ];
 
     /**
@@ -81,6 +84,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_superadmin' => 'boolean',
         ];
     }
 

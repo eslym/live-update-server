@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { useForm } from '@inertiajs/svelte';
+    import { inertia, useForm } from '@inertiajs/svelte';
     import FormErrors from '@/components/FormErrors.svelte';
     import { config } from '@/lib/config';
 
@@ -22,9 +22,13 @@
     <title>Login | {config.APP_NAME}</title>
 </svelte:head>
 
-<div class="min-h-dvh w-full px-4 py-8 flex flex-col items-center justify-center">
+<div class="min-h-dvh w-full px-4 py-8 flex flex-col justify-center items-center">
     <form method="post" action="/login" class="form-group max-w-80" onsubmit={submit} novalidate>
-        <div class="form-field">
+        <h1 class="text-3xl font-semibold w-max max-w-full mx-auto">
+            <img src="/favicon.svg" alt="Logo" class="size-10 inline-block" />
+            {config.APP_NAME}
+        </h1>
+        <div class="form-field mt-6">
             <label for="email" class="form-label">Email</label>
             <input
                 type="email"
@@ -51,9 +55,12 @@
         <div class="form-field pt-5">
             <div class="form-control justify-between">
                 <button type="submit" class="btn btn-primary w-full" disabled={$form.processing}
-                    >Login</button
-                >
+                    >Login
+                </button>
             </div>
+        </div>
+        <div class="mt-2 text-center">
+            <a use:inertia href="/forgot-password" class="link link-secondary">Forgot Password?</a>
         </div>
     </form>
 </div>

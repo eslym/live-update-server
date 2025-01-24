@@ -53,7 +53,14 @@ class ProfileController extends Controller
             }
         }
 
-        $request->user()->update($data);
+        /** @var User $user */
+        $user = $request->user();
+
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            $data['email_verified_at'] = null;
+        }
+
+        $user->update($data);
 
         return redirect()->back()->with('alert', [
             'title' => 'Success',

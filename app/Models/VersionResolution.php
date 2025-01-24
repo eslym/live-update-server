@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property int $project_id
@@ -20,8 +20,8 @@ use Illuminate\Support\Carbon;
  * @property bool $needs_reindex
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Project $project
- * @property-read Version|null $version
+ * @property-read \App\Models\Project $project
+ * @property-read \App\Models\Version|null $version
  * @method static Builder<static>|VersionResolution newModelQuery()
  * @method static Builder<static>|VersionResolution newQuery()
  * @method static Builder<static>|VersionResolution query()

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $nanoid
@@ -24,8 +24,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $ios_requirements
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Project $project
- * @property-read Collection<int, VersionResolution> $resolutions
+ * @property-read \App\Models\Project $project
+ * @property-read Collection<int, \App\Models\VersionResolution> $resolutions
  * @property-read int|null $resolutions_count
  * @method static Builder<static>|Version newModelQuery()
  * @method static Builder<static>|Version newQuery()

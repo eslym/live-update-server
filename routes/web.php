@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SetupController;
@@ -17,14 +18,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/config.json', [ConfigController::class, 'json'])
     ->name('config.json');
 
-Route::middleware(['guest'])->group(function () {
-    Route::inertia('/login', 'login')->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-});
-
 Route::middleware([NoUserExists::class])->group(function () {
     Route::inertia('/setup', 'setup')->name('setup');
     Route::post('/setup', [SetupController::class, 'setup']);
+});
+
+Route::middleware(['guest'])->group(function () {
+    Route::inertia('/login', 'login')->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+
+    Route::inertia('/forgot-password', 'password/forgot')->name('password.forgot');
+    Route::post('/forgot-password', [PasswordResetController::class, 'request']);
+
+    Route::inertia('/reset-password/{token}', 'password/reset')->name('password.reset');
+    Route::post('/reset-password/{token}', [PasswordResetController::class, 'reset']);
 });
 
 Route::middleware(['auth'])->group(function () {

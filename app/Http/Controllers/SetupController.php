@@ -17,7 +17,10 @@ class SetupController extends Controller
             'password' => ['required', 'string', 'confirmed', Password::default()],
         ]);
 
-        User::create($data);
+        User::create([
+            ...$data,
+            'is_superadmin' => true,
+        ]);
 
         return redirect()->route('login');
     }

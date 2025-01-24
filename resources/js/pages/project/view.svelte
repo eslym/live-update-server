@@ -18,7 +18,6 @@
     import { config } from '@/lib/config';
     import CodeSnippet from '@/components/CodeSnippet.svelte';
     import { fragment } from '@/lib/hash';
-    import { inertia } from '@inertiajs/svelte';
 
     let fileInput: HTMLInputElement = $state(null as any);
     let uploadProgress: number | null = $state(null);
