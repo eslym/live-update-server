@@ -6,7 +6,7 @@
     import { router, useForm } from '@inertiajs/svelte';
     import { config } from '@/lib/config';
     import moment from 'moment';
-    import { Delete01Icon, PencilIcon } from 'hugeicons-svelte';
+    import { Delete01Icon, PencilEdit01Icon } from 'hugeicons-svelte';
     import { promptAlert } from '@/components/Alert.svelte';
     import FormErrors from '@/components/FormErrors.svelte';
 
@@ -132,7 +132,7 @@
                                 editModal = true;
                             }}
                         >
-                            <PencilIcon size={16} />
+                            <PencilEdit01Icon size={16} />
                         </button>
                         <button
                             class="btn btn-sm"
@@ -191,7 +191,10 @@
         <h2 class="text-xl">Create Account</h2>
         <div class="form-group">
             <div class="form-field">
-                <label for="name" class="form-label">Name</label>
+                <label for="name" class="form-label">
+                    Name
+                    <span class="text-red-10">*</span>
+                </label>
                 <input
                     type="text"
                     id="name"
@@ -205,7 +208,10 @@
         </div>
         <div class="form-group">
             <div class="form-field">
-                <label for="email" class="form-label">Email</label>
+                <label for="email" class="form-label">
+                    Email
+                    <span class="text-red-10">*</span>
+                </label>
                 <input
                     type="email"
                     id="email"
@@ -219,7 +225,10 @@
         </div>
         <div class="form-group">
             <div class="form-field">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="form-label">
+                    Password
+                    <span class="text-red-10">*</span>
+                </label>
                 <input
                     type="password"
                     id="password"
@@ -233,7 +242,10 @@
         </div>
         <div class="form-group">
             <div class="form-field">
-                <label for="password_confirmation" class="form-label">Confirm Password</label>
+                <label for="password_confirmation" class="form-label">
+                    Confirm Password
+                    <span class="text-red-10">*</span>
+                </label>
                 <input
                     type="password"
                     id="password_confirmation"
