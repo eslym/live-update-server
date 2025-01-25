@@ -52,7 +52,6 @@
 
     let editModal = $state(false);
     let versionModal = $state(false);
-    let codeSnippetModal = $state(false);
 
     const editForm = useForm({
         name: project.name,
@@ -80,7 +79,8 @@
 
     let tab = $derived(
         {
-            '#versions': 'versions'
+            '#versions': 'versions',
+            '#code': 'code'
         }[fragment.value] ?? 'info'
     );
 
@@ -135,22 +135,30 @@
     <h1 class="text-3xl font-semibold">Project: {project.name}</h1>
     <label for="modal-version" class="ml-auto btn btn-solid-primary">New Version</label>
     <label for="modal-edit" class="btn btn-secondary">Edit Project</label>
-    <label for="modal-code-snippet" class="btn btn-success">Example Code</label>
 </div>
 
 <div class="tabs mt-4">
     <a
         href="#info"
-        onclick={(ev) => {}}
         class="font-semibold tab text-lg tab-bordered px-8"
-        class:tab-active={tab === 'info'}>Info</a
+        class:tab-active={tab === 'info'}
     >
+        Info
+    </a>
     <a
         href="#versions"
-        onclick={(ev) => {}}
         class="font-semibold tab text-lg tab-bordered px-8"
-        class:tab-active={tab === 'versions'}>Versions ({versions.total})</a
+        class:tab-active={tab === 'versions'}
     >
+        Versions ({versions.total})
+    </a>
+    <a
+        href="#code"
+        class="font-semibold tab text-lg tab-bordered px-8"
+        class:tab-active={tab === 'code'}
+    >
+        Example Code
+    </a>
 </div>
 
 <div class="mt-4">
@@ -301,6 +309,9 @@
                 </tr>
             </tfoot>
         </table>
+    </div>
+    <div class="w-full" class:hidden={tab !== 'code'}>
+        <CodeSnippet endpoint={apiEndpoint} />
     </div>
 </div>
 
@@ -579,25 +590,4 @@
             <label for="modal-edit-version" class="btn btn-block">Cancel</label>
         </div>
     </form>
-</div>
-
-<input
-    class="modal-state"
-    id="modal-code-snippet"
-    type="checkbox"
-    bind:checked={codeSnippetModal}
-/>
-<div class="modal">
-    <label class="modal-overlay" for="modal-code-snippet"></label>
-    <div class="modal-content flex flex-col gap-5 w-[48rem] max-w-full">
-        <label
-            for="modal-code-snippet"
-            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</label
-        >
-        <h2 class="text-xl">Example Code</h2>
-        <CodeSnippet endpoint={apiEndpoint} />
-        <div class="flex gap-3">
-            <label for="modal-code-snippet" class="btn btn-block">Close</label>
-        </div>
-    </div>
 </div>

@@ -6,6 +6,7 @@ import NProgress from 'nprogress';
 import Alert, { promptAlert } from '@/components/Alert.svelte';
 import { loadConfig } from '@/lib/config';
 import { initShiki } from '@/lib/shiki';
+import Theme from '@/components/Theme.svelte';
 
 const pages = import.meta.glob('./pages/**/*.svelte');
 
@@ -53,6 +54,7 @@ Promise.all([loadConfig(), initShiki()]).then(async () => {
         },
         progress: false
     });
+    mount(Theme, { target: document.body });
     mount(Alert, { target: document.body });
     document.getElementById('page-spinner')!.style.opacity = '0';
 });

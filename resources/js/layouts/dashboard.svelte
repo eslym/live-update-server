@@ -1,10 +1,14 @@
 <script lang="ts">
     import { inertia, router } from '@inertiajs/svelte';
     import {
+        ComputerIcon,
         DashboardSquare02Icon,
         Door01Icon,
         LockKeyIcon,
         Menu01Icon,
+        Moon02Icon,
+        PaintBoardIcon,
+        Sun01Icon,
         UserGroupIcon,
         UserIcon
     } from 'hugeicons-svelte';
@@ -14,6 +18,8 @@
         children?: import('svelte').Snippet;
         route: string | null;
     }
+
+    let theme = $derived(localStorage.getItem('theme'));
 
     let { children, route }: Props = $props();
 
@@ -84,6 +90,61 @@
                 <nav class="menu rounded-md">
                     <section class="menu-section px-4">
                         <ul class="menu-items">
+                            <li class="dropdown w-full">
+                                <button class="menu-item w-full">
+                                    <PaintBoardIcon class="h-5 w-5 opacity-75" />
+                                    Theme
+                                </button>
+                                <div
+                                    class="dropdown-menu dropdown-menu-right-top ml-2 items-center"
+                                >
+                                    <button
+                                        class="dropdown-item"
+                                        class:dropdown-active={theme === null}
+                                        onclick={(ev) => {
+                                            localStorage.removeItem('theme');
+                                            ev.currentTarget.blur();
+                                        }}
+                                    >
+                                        <span>
+                                            <ComputerIcon
+                                                class="h-5 w-5 opacity-75 inline-block mr-2"
+                                            />
+                                            System
+                                        </span>
+                                    </button>
+                                    <button
+                                        class="dropdown-item"
+                                        class:dropdown-active={theme === 'light'}
+                                        onclick={(ev) => {
+                                            localStorage.setItem('theme', 'light');
+                                            ev.currentTarget.blur();
+                                        }}
+                                    >
+                                        <span>
+                                            <Sun01Icon
+                                                class="h-5 w-5 opacity-75 inline-block mr-2"
+                                            />
+                                            Light
+                                        </span>
+                                    </button>
+                                    <button
+                                        class="dropdown-item"
+                                        class:dropdown-active={theme === 'dark'}
+                                        onclick={(ev) => {
+                                            localStorage.setItem('theme', 'dark');
+                                            ev.currentTarget.blur();
+                                        }}
+                                    >
+                                        <span>
+                                            <Moon02Icon
+                                                class="h-5 w-5 opacity-75 inline-block mr-2"
+                                            />
+                                            Dark
+                                        </span>
+                                    </button>
+                                </div>
+                            </li>
                             <li class="contents">
                                 <button
                                     onclick={async () => {

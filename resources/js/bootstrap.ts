@@ -1,4 +1,5 @@
 import axios from 'axios';
+import '@/lib/storage';
 
 window.axios = axios;
 

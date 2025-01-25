@@ -93,7 +93,7 @@
         <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>2FA</th>
+            <th class="!text-center">2FA</th>
             <th>Created At</th>
             <th class="w-0"></th>
         </tr>
@@ -104,11 +104,11 @@
             <tr>
                 <td>{account.name}</td>
                 <td>{account.email}</td>
-                <td class="min-w-max w-0">
+                <td class="min-w-max w-0 !text-center">
                     {#if account.is_2fa_enabled}
-                        <span class="badge badge-success">Enabled</span>
+                        <span class="badge badge-flat-success">Enabled</span>
                     {:else}
-                        <span class="badge badge-warning">Disabled</span>
+                        <span class="badge badge-flat-warning">Disabled</span>
                     {/if}
                 </td>
                 <td class="min-w-max w-0">{timestamp}</td>

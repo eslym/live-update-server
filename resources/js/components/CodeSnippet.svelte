@@ -44,18 +44,19 @@ if (Capacitor.isNativePlatform()) {
         });
 }
 `);
+    let theme = $derived(localStorage.getItem('theme'));
     let highlighted = $derived(
         shiki
             .codeToHtml(code, {
                 lang: 'typescript',
-                theme: dark.current ? 'github-dark' : 'github-light'
+                theme: `github-${theme ?? (dark.current ? 'dark' : 'light')}`
             })
             .replace('<pre class="', '<pre class="h-0 min-h-0 flex-grow overflow-auto ')
     );
 </script>
 
 <div
-    class="textarea max-w-full font-mono h-[60dvh] overflow-hidden w-full p-0 flex flex-col relative"
+    class="textarea max-w-5xl font-mono h-[600px] overflow-hidden w-full p-0 flex flex-col relative"
 >
     {@html highlighted}
     <button
