@@ -20,7 +20,7 @@
         }
     > = $state(new SvelteMap());
 
-    export function alert(message: string | Alert) {
+    export function promptAlert(message: string | Alert) {
         if (typeof message === 'string') {
             message = { content: message };
         }

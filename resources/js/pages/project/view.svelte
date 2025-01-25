@@ -14,7 +14,7 @@
         PencilEdit01Icon
     } from 'hugeicons-svelte';
     import PaginateLinks from '@/components/PaginateLinks.svelte';
-    import { alert } from '@/components/Alert.svelte';
+    import { promptAlert } from '@/components/Alert.svelte';
     import { config } from '@/lib/config';
     import CodeSnippet from '@/components/CodeSnippet.svelte';
     import { fragment } from '@/lib/hash';
@@ -249,7 +249,7 @@
                                 </a>
                                 <button
                                     onclick={async () => {
-                                        const res = await alert({
+                                        const res = await promptAlert({
                                             title: 'Delete Version',
                                             content:
                                                 'Are you sure you want to delete this version?',
@@ -327,7 +327,7 @@
         <h2 class="text-xl">Update Project</h2>
         <div class="form-group">
             <div class="form-field">
-                <label for="name" class="form-label">Name <span class="text-error">*</span></label>
+                <label for="name" class="form-label">Name <span class="text-red-10">*</span></label>
                 <input
                     type="text"
                     id="name"
@@ -386,7 +386,7 @@
         <h2 class="text-xl">Create Version</h2>
         <div class="form-group">
             <div class="form-field">
-                <label for="name" class="form-label">Name <span class="text-error">*</span></label>
+                <label for="name" class="form-label">Name <span class="text-red-10">*</span></label>
                 <input
                     type="text"
                     id="name"
@@ -398,7 +398,7 @@
                 <FormErrors error={$versionForm.errors.name} />
             </div>
             <div class="form-field">
-                <span class="form-label">Bundle File <span class="text-error">*</span></span>
+                <span class="form-label">Bundle File <span class="text-red-10">*</span></span>
                 <input
                     type="file"
                     id="bundle"
@@ -531,7 +531,7 @@
         <div class="form-group">
             <div class="form-field">
                 <label for="edit_name" class="form-label"
-                    >Name <span class="text-error">*</span></label
+                    >Name <span class="text-red-10">*</span></label
                 >
                 <input
                     type="text"

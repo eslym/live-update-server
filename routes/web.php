@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\PasswordResetController;
@@ -62,6 +63,15 @@ Route::middleware(['auth'])->group(function () {
             ->name('profile');
         Route::post('/profile', [ProfileController::class, 'update'])
             ->name('profile.update');
+
+        Route::get('/accounts', [AccountController::class, 'index'])
+            ->name('account.index');
+        Route::post('/accounts', [AccountController::class, 'create'])
+            ->name('account.create');
+        Route::post('/accounts/{account}', [AccountController::class, 'update'])
+            ->name('account.update');
+        Route::delete('/accounts/{account}', [AccountController::class, 'delete'])
+            ->name('account.delete');
 
         Route::get('/tokens', [TokenController::class, 'index'])
             ->name('token.index');

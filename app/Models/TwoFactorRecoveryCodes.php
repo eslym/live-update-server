@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
- * 
+ *
  *
  * @property int $user_id
  * @property string $code
- * @property-read \App\Models\User $user
+ * @property-read User $user
  * @method static Builder<static>|TwoFactorRecoveryCodes newModelQuery()
  * @method static Builder<static>|TwoFactorRecoveryCodes newQuery()
  * @method static Builder<static>|TwoFactorRecoveryCodes query()

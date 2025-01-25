@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Middleware\HandleInertiaRequests;
-use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -42,7 +41,9 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return match ($response->getStatusCode()) {
                 404 => inertiaResponse(inertia('errors/404'), 404),
+                405 => inertiaResponse(inertia('errors/405'), 405),
                 500 => config('app.debug') ? $response : inertiaResponse(inertia('errors/500'), 500),
+                503 => inertiaResponse(inertia('errors/503'), 503),
                 default => $response,
             };
         });

@@ -51,6 +51,9 @@ class TwoFactorAuthController extends Controller
         $recovery_codes = Authenticator::generateRecoveryCodes();
 
         $user->recovery_codes()
+            ->delete();
+
+        $user->recovery_codes()
             ->insert(array_map(fn($code) => ['code' => $code, 'user_id' => $user->id], $recovery_codes));
 
         session()->forget('google2fa_secret');
@@ -112,8 +115,6 @@ class TwoFactorAuthController extends Controller
         $user->update([
             'google2fa_secret' => null,
         ]);
-
-        $user->recovery_codes()->delete();
 
         return redirect()->route('profile')
             ->with('alert', [

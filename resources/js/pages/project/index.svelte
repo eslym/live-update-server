@@ -6,7 +6,7 @@
     import { useForm, inertia, router } from '@inertiajs/svelte';
     import FormErrors from '@/components/FormErrors.svelte';
     import PaginateLinks from '@/components/PaginateLinks.svelte';
-    import { alert } from '@/components/Alert.svelte';
+    import { promptAlert } from '@/components/Alert.svelte';
     import moment from 'moment';
     import { EyeIcon, Delete01Icon } from 'hugeicons-svelte';
     import { config } from '@/lib/config';
@@ -83,7 +83,7 @@
                         </a>
                         <button
                             onclick={async () => {
-                                const res = await alert({
+                                const res = await promptAlert({
                                     title: 'Delete Project',
                                     content: 'Are you sure you want to delete this project?',
                                     actions: {
@@ -147,7 +147,7 @@
         <h2 class="text-xl">Create Project</h2>
         <div class="form-group">
             <div class="form-field">
-                <label for="name" class="form-label">Name <span class="text-error">*</span></label>
+                <label for="name" class="form-label">Name <span class="text-red-10">*</span></label>
                 <input
                     type="text"
                     id="name"

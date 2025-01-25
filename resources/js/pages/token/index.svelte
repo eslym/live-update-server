@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import { alert } from '@/components/Alert.svelte';
+    import { promptAlert } from '@/components/Alert.svelte';
     import { Delete01Icon, InformationCircleIcon } from 'hugeicons-svelte';
     import moment from 'moment';
     import PaginateLinks from '@/components/PaginateLinks.svelte';
@@ -91,7 +91,7 @@
                     <div class="btn-group min-w-max">
                         <button
                             onclick={async () => {
-                                const res = await alert({
+                                const res = await promptAlert({
                                     title: 'Revoke Token',
                                     content: 'Are you sure you want to revoke this token?',
                                     actions: {
@@ -155,7 +155,7 @@
         <h2 class="text-xl">Create Token</h2>
         <div class="form-group">
             <div class="form-field">
-                <label for="name" class="form-label">Name <span class="text-error">*</span></label>
+                <label for="name" class="form-label">Name <span class="text-red-10">*</span></label>
                 <input
                     type="text"
                     id="name"

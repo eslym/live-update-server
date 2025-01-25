@@ -3,7 +3,7 @@ import './bootstrap';
 import { createInertiaApp, page, router } from '@inertiajs/svelte';
 import { mount } from 'svelte';
 import NProgress from 'nprogress';
-import Alert, { alert } from '@/components/Alert.svelte';
+import Alert, { promptAlert } from '@/components/Alert.svelte';
 import { loadConfig } from '@/lib/config';
 import { initShiki } from '@/lib/shiki';
 
@@ -33,7 +33,7 @@ router.on('progress', (event) => {
 
 page.subscribe(($page) => {
     if ($page?.props?.alert) {
-        alert($page.props.alert as any).then(() => {});
+        promptAlert($page.props.alert as any).then(() => {});
         router.replace({
             props: (props) => {
                 delete props.alert;

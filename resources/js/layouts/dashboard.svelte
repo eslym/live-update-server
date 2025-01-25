@@ -5,9 +5,10 @@
         Door01Icon,
         LockKeyIcon,
         Menu01Icon,
+        UserGroupIcon,
         UserIcon
     } from 'hugeicons-svelte';
-    import { alert } from '@/components/Alert.svelte';
+    import { promptAlert } from '@/components/Alert.svelte';
 
     interface Props {
         children?: import('svelte').Snippet;
@@ -54,6 +55,17 @@
                             </li>
                             <li class="contents">
                                 <a
+                                    href="/accounts"
+                                    class="menu-item"
+                                    class:menu-active={group === 'account'}
+                                    use:inertia
+                                >
+                                    <UserGroupIcon class="h-5 w-5 opacity-75" />
+                                    <span>Accounts</span>
+                                </a>
+                            </li>
+                            <li class="contents">
+                                <a
                                     href="/tokens"
                                     class="menu-item"
                                     class:menu-active={group === 'token'}
@@ -75,7 +87,7 @@
                             <li class="contents">
                                 <button
                                     onclick={async () => {
-                                        const res = await alert({
+                                        const res = await promptAlert({
                                             title: 'Logout',
                                             content:
                                                 'Are you sure you want to logout from the system?',
