@@ -6,7 +6,7 @@
     import { router, useForm } from '@inertiajs/svelte';
     import { config } from '@/lib/config';
     import moment from 'moment';
-    import { Delete01Icon, PencilEdit01Icon } from 'hugeicons-svelte';
+    import { Delete01Icon, PencilEdit01Icon } from '@eslym/hugeicons-svelte';
     import { promptAlert } from '@/components/Alert.svelte';
     import FormErrors from '@/components/FormErrors.svelte';
 

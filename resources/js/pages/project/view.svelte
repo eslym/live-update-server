@@ -12,7 +12,7 @@
         Download01Icon,
         MultiplicationSignIcon,
         PencilEdit01Icon
-    } from 'hugeicons-svelte';
+    } from '@eslym/hugeicons-svelte';
     import PaginateLinks from '@/components/PaginateLinks.svelte';
     import { promptAlert } from '@/components/Alert.svelte';
     import { config } from '@/lib/config';

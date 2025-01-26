@@ -5,7 +5,7 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
     import { promptAlert } from '@/components/Alert.svelte';
-    import { Delete01Icon, InformationCircleIcon } from 'hugeicons-svelte';
+    import { Delete01Icon, InformationCircleIcon } from '@eslym/hugeicons-svelte';
     import moment from 'moment';
     import PaginateLinks from '@/components/PaginateLinks.svelte';
     import { router, useForm } from '@inertiajs/svelte';

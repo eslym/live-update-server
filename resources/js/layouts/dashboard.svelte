@@ -11,7 +11,7 @@
         Sun01Icon,
         UserGroupIcon,
         UserIcon
-    } from 'hugeicons-svelte';
+    } from '@eslym/hugeicons-svelte';
     import { promptAlert } from '@/components/Alert.svelte';
 
     interface Props {

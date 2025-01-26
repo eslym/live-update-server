@@ -7,7 +7,7 @@
     import FormErrors from '@/components/FormErrors.svelte';
     import { config } from '@/lib/config';
     import { onMount } from 'svelte';
-    import { Copy01Icon } from 'hugeicons-svelte';
+    import { Copy01Icon } from '@eslym/hugeicons-svelte';
 
     let {
         user,

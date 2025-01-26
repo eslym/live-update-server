@@ -8,7 +8,7 @@
     import PaginateLinks from '@/components/PaginateLinks.svelte';
     import { promptAlert } from '@/components/Alert.svelte';
     import moment from 'moment';
-    import { EyeIcon, Delete01Icon } from 'hugeicons-svelte';
+    import { EyeIcon, Delete01Icon } from '@eslym/hugeicons-svelte';
     import { config } from '@/lib/config';
 
     let {

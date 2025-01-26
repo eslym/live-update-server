@@ -1,7 +1,7 @@
 <script lang="ts">
     import { shiki } from '@/lib/shiki';
     import { dark } from '@/lib/config';
-    import { Copy01Icon } from 'hugeicons-svelte';
+    import { Copy01Icon } from '@eslym/hugeicons-svelte';
 
     let { endpoint }: { endpoint: string } = $props();
 
