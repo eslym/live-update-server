@@ -47,7 +47,7 @@ class APIController extends Controller
         }
 
         $version = $resolution->version()->first([
-            'id', 'name', 'signature',
+            'id', 'nanoid', 'name', 'signature',
         ]);
 
         return response()->json([
