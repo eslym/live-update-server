@@ -23,7 +23,7 @@ final class Authenticator
     public const EXPIRED = 1;
     public const NO_SESSION = -1;
 
-    public function __construct(private Google2FA $google2fa, private int $keyLength, private int $keepAlive)
+    public function __construct(private readonly Google2FA $google2fa, private readonly int $keyLength, private readonly int $keepAlive)
     {
     }
 

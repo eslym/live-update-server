@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use Carbon\CarbonTimeZone;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class TokenController extends Controller
 {
@@ -29,11 +31,23 @@ class TokenController extends Controller
             'name' => ['required', 'string'],
             'expires_at' => ['nullable', 'date'],
         ]);
-
         /** @var Client $client */
         $client = Client::first();
 
-        $token = $client->createToken($data['name'], expiresAt: $data['expires_at'] ? Carbon::parse($data['expires_at']) : null);
+        if ($data['expires_at']) {
+            $timezone = null;
+            try {
+                $timezone = CarbonTimeZone::create($request->string('_tz', config('app.timezone'))->value());
+            } catch (Throwable) {
+            }
+            $data['expires_at'] = Carbon::parse($data['expires_at'], $timezone)
+                ->timezone(config('app.timezone'));
+        }
+
+        $token = $client->createToken(
+            $data['name'],
+            expiresAt: $data['expires_at']
+        );
 
         return redirect()->route('token.index')->with('recentCreated', $token->plainTextToken);
     }

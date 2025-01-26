@@ -27,6 +27,7 @@
     } = $props();
 
     let form = useForm({
+        _tz: config.TIMEZONE,
         name: '',
         expires_at: ''
     });
@@ -82,8 +83,14 @@
     <tbody>
         {#each tokens.data as token}
             {@const timestamp = moment(token.created_at).fromNow()}
+            {@const expired = token.expires_at && moment(token.expires_at).isBefore(moment())}
             <tr>
-                <td>{token.name}</td>
+                <td>
+                    {token.name}
+                    {#if expired}
+                        <span class="badge badge-flat-error">Expired</span>
+                    {/if}
+                </td>
                 <td>{timestamp}</td>
                 <td>{token.expires_at ? moment(token.expires_at).calendar() : 'Never'}</td>
                 <td>{token.last_used_at ? moment(token.last_used_at).fromNow() : 'Never'}</td>
