@@ -7,11 +7,13 @@
         "@inertiajs/svelte": "^2.0.3",
         "@shikijs/themes": "^2.1.0",
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
+        "@types/hast": "^3.0.4",
         "@types/nprogress": "^0.2.3",
         "@types/qrcode": "^1.5.5",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.9",
         "concurrently": "^9.1.2",
+        "inline-style-parser": "^0.2.4",
         "laravel-vite-plugin": "^1.2.0",
         "moment": "^2.30.1",
         "nanoid": "^5.0.9",
@@ -23,7 +25,7 @@
         "qrcode": "^1.5.4",
         "rippleui": "^1.12.1",
         "shiki": "^2.1.0",
-        "svelte": "^5.19.2",
+        "svelte": "^5.19.3",
         "tailwindcss": "^3.4.17",
         "tus-js-client": "^4.3.1",
         "vite": "^6.0.11",
@@ -354,6 +356,8 @@
     "html-escape": ["html-escape@2.0.0", "", {}, "sha512-BYh0wceM2Vm4/Q8TNfnKaHXs4DCv2DuYVS87DR40elSvFc+8a6B9mE9ej+8nCOkdqPx7puEx9+hm+GoJ3f9PzA=="],
 
     "html-void-elements": ["html-void-elements@3.0.0", "", {}, "sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg=="],
+
+    "inline-style-parser": ["inline-style-parser@0.2.4", "", {}, "sha512-0aO8FkhNZlj/ZIbNi7Lxxr12obT7cL1moPfE4tg1LkX7LlLfC6DeX4l2ZEud1ukP9jNQyNnfzQVqwbwmAATY4Q=="],
 
     "is-binary-path": ["is-binary-path@2.1.0", "", { "dependencies": { "binary-extensions": "^2.0.0" } }, "sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw=="],
 
