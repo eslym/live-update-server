@@ -15,9 +15,12 @@ return new class extends Migration {
                 ->default(false)
                 ->after('email_verified_at');
         });
-        DB::table('users')
-            ->where('id', DB::table('users')->first(['id'])->id)
-            ->update(['is_superadmin' => true]);
+        $first = DB::table('users')->first(['id']);
+        if ($first) {
+            DB::table('users')
+                ->where('id', $first->id)
+                ->update(['is_superadmin' => true]);
+        }
     }
 
     /**
