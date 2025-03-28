@@ -12,11 +12,11 @@ import { LiveUpdate } from '@capawesome/live-update';
 const BUNDLES_ENDPOINT = ${JSON.stringify(endpoint)};
 
 if (Capacitor.isNativePlatform()) {
-    Promise.all([LiveUpdate.getVersionName(), LiveUpdate.getCurrentBundle()])
-        .then(async ([{ versionName }, { bundleId }]) => {
+    Promise.all([LiveUpdate.getVersionCode(), LiveUpdate.getCurrentBundle()])
+        .then(async ([{ versionCode }, { bundleId }]) => {
             const url = new URL(BUNDLES_ENDPOINT);
             url.searchParams.set('platform', Capacitor.getPlatform());
-            url.searchParams.set('version', versionName);
+            url.searchParams.set('build', versionCode);
             const res = await CapacitorHttp.get({
                 url: url.href,
                 headers: {

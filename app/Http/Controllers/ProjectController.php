@@ -33,22 +33,32 @@ class ProjectController extends Controller
     public function view(Project $project): Responsable
     {
         $versions = $project->versions()
+            ->with('channel:id,name')
             ->orderByDesc('created_at')
             ->select([
                 'id',
                 'nanoid',
                 'project_id',
+                'channel_id',
                 'name',
                 'created_at',
-                'android_requirements',
-                'ios_requirements',
+                'android_available',
+                'android_min',
+                'android_max',
+                'ios_available',
+                'ios_min',
+                'ios_max',
             ])
             ->paginate();
 
         $latestRequirements = $project->versions()->orderByDesc('created_at')->first([
-            'android_requirements',
-            'ios_requirements',
-        ]);
+            'android_available',
+            'android_min',
+            'android_max',
+            'ios_available',
+            'ios_min',
+            'ios_max',
+        ])?->requirements;
 
         return inertia('project/view', [
             'project' => $project->only([
@@ -61,8 +71,8 @@ class ProjectController extends Controller
             ]),
             'versions' => $versions,
             'latestRequirements' => $latestRequirements ?? [
-                    'android_requirements' => null,
-                    'ios_requirements' => null,
+                    'android' => ['min' => null, 'max' => null],
+                    'ios' => ['min' => null, 'max' => null],
                 ],
         ]);
     }

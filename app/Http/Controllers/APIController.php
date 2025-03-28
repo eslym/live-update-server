@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Channel;
 use App\Models\Project;
 use App\Models\Version;
-use App\Models\VersionResolution;
-use App\Rules\SemverRule;
+use App\Rules\FindRule;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -21,34 +22,35 @@ class APIController extends Controller
     {
         $query = Validator::make($request->query->all(), [
             'platform' => ['required', 'string', 'in:ios,android'],
-            'version' => ['required', 'string', new SemverRule()],
+            'build' => ['required', 'integer'],
+            'channel' => ['nullable', FindRule::make(Channel::class, 'name')
+                ->where('project_id', $project->id)
+            ]
         ])->validate();
 
-        $resolution = $project->version_resolutions()
-            ->where('platform', $query['platform'])
-            ->where('app_version', $query['version'])
-            ->first();
+        $platform = $query['platform'];
 
-        if (!$resolution) {
-            $resolution = new VersionResolution([
-                'project_id' => $project->id,
-                'platform' => $query['platform'],
-                'app_version' => $query['version'],
-                'needs_reindex' => true,
-            ]);
-        }
+        /** @var Builder $source */
+        $source = $query['channel'] ? $query['channel']->versions() :
+            $project->versions()->where('channel_id', null);
 
-        if ($resolution->needs_reindex) {
-            $resolution->reIndex();
-        }
+        $source->where($platform . '_available', true);
 
-        if (!$resolution->version_id) {
+        $source->where(
+            fn(Builder $query) => $query->whereNull($platform . '_min')
+                ->orWhere($platform . '_min', '<=', $query['build'])
+        );
+
+        $source->where(
+            fn(Builder $query) => $query->whereNull($platform . '_max')
+                ->orWhere($platform . '_max', '>', $query['build'])
+        );
+
+        $version = $source->orderByDesc('created_at')->first();
+
+        if (!$version) {
             return response()->json(['message' => 'No version found'], 404);
         }
-
-        $version = $resolution->version()->first([
-            'id', 'nanoid', 'name', 'signature',
-        ]);
 
         return response()->json([
             'message' => 'Version found',

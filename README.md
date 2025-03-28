@@ -6,7 +6,7 @@ to [Capawesome Cloud](https://cloud.capawesome.io/).
 ## Requirements
 
 | Name                  | Version  |
-|-----------------------|----------|
+| --------------------- | -------- |
 | PHP                   | >= 8.3   |
 | Composer              | >= 2.1   |
 | [Bun](https://bun.sh) | >= 1.2.0 |
