@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\VersionCollection;
 use App\Models\Project;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
@@ -69,7 +70,7 @@ class ProjectController extends Controller
                 'public_key',
                 'created_at',
             ]),
-            'versions' => $versions,
+            'versions' => VersionCollection::collection($versions),
             'latestRequirements' => $latestRequirements ?? [
                     'android' => ['min' => null, 'max' => null],
                     'ios' => ['min' => null, 'max' => null],

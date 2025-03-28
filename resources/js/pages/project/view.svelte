@@ -29,6 +29,13 @@
         duration: 150
     });
 
+    type VersionRange = {
+        min?: number;
+        max?: number;
+    };
+
+    type Requirements = Partial<Record<'android' | 'ios', VersionRange>>;
+
     let {
         project,
         versions,
@@ -42,18 +49,18 @@
             public_key: string;
             created_at: string;
         };
-        versions: Pagination<{
+        versions: PaginationResource<{
             id: string;
+            channel: {
+                id: number;
+                name: string;
+            } | null;
             nanoid: string;
             name: string;
+            reqs: Requirements;
             created_at: string;
-            android_requirements: string | null;
-            ios_requirements: string | null;
         }>;
-        latestRequirements: {
-            android_requirements: string;
-            ios_requirements: string;
-        };
+        latestRequirements: Requirements;
     } = $props();
 
     let editModal = $state(false);
@@ -72,8 +79,7 @@
 
     const editVersionForm = useForm({
         name: '',
-        android_requirements: '',
-        ios_requirements: ''
+        reqs: {} as Requirements
     });
 
     let editVersion: string | null = $state(null);
@@ -136,6 +142,20 @@
     }
 </script>
 
+{#snippet version_range(range: VersionRange | undefined | null)}
+    {#if !range}
+        N/A
+    {:else if (range.min ?? null) === null && (range.max ?? null) === null}
+        Any
+    {:else if (range.min ?? null) === null}
+        ≤ {range.max}
+    {:else if (range.max ?? null) === null}
+        ≥ {range.min}
+    {:else}
+        {range.min} - {range.max}
+    {/if}
+{/snippet}
+
 <svelte:head>
     <title>Project: {project.name} | {config.APP_NAME}</title>
 </svelte:head>
@@ -159,7 +179,7 @@
         class="font-semibold tab text-lg tab-bordered px-8"
         class:tab-active={tab === 'versions'}
     >
-        Versions ({versions.total})
+        Versions ({versions.meta.total})
     </a>
     <a
         href="#code"
@@ -235,8 +255,8 @@
                     <tr class="min-h-0 overflow-hidden">
                         <td>{version.name}</td>
                         <td class="w-0 min-w-max">{timestamp}</td>
-                        <td class="w-0 min-w-max">{version.android_requirements || 'N/A'}</td>
-                        <td class="w-0 min-w-max">{version.ios_requirements || 'N/A'}</td>
+                        <td class="w-0 min-w-max">{@render version_range(version.reqs.android)}</td>
+                        <td class="w-0 min-w-max">{@render version_range(version.reqs.ios)}</td>
                         <td class="w-0 min-w-max">
                             <div class="btn-group min-w-max">
                                 <button
@@ -245,9 +265,7 @@
                                         editVersionModal = true;
                                         $editVersionForm.defaults({
                                             name: version.name,
-                                            android_requirements:
-                                                version.android_requirements || '',
-                                            ios_requirements: version.ios_requirements || ''
+                                            reqs: JSON.parse(JSON.stringify(version.reqs))
                                         });
                                         $editVersionForm.reset();
                                         $editVersionForm.clearErrors();
