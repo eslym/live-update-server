@@ -10,6 +10,7 @@
     import moment from 'moment';
     import { EyeIcon, Delete01Icon } from '@eslym/hugeicons-svelte';
     import { config } from '@/lib/config';
+    import { checkTwoFactorSession } from '@/components/TwoFactorDialog.svelte';
 
     let {
         projects
@@ -36,8 +37,9 @@
         private_key: ''
     });
 
-    function submit(ev: SubmitEvent) {
+    async function submit(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $form.post('/projects', {
             onSuccess: () => {
                 editModal = false;
@@ -92,6 +94,7 @@
                                     }
                                 });
                                 if (res) {
+                                    if (!(await checkTwoFactorSession())) return;
                                     router.delete(`/projects/${project.nanoid}`, {
                                         replace: true,
                                         preserveState: true,

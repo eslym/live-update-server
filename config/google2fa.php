@@ -12,7 +12,12 @@ return [
     /**
      * How long to keep the authenticated session alive, in minutes.
      */
-    'keep_alive' => env('GOOGLE2FA_KEEP_ALIVE', 600),
+    'keep_alive' => env('GOOGLE2FA_KEEP_ALIVE', 120),
+
+    /**
+     * Show unlock dialog before the session expires, in minutes.
+     */
+    'renew_time_frame' => env('GOOGLE2FA_RENEW_TIME_FRAME', 20),
 
     'debug' => (bool)env('GOOGLE2FA_DEBUG', false),
 

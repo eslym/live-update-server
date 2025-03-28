@@ -18,10 +18,16 @@
     import { config } from '@/lib/config';
     import CodeSnippet from '@/components/CodeSnippet.svelte';
     import { fragment } from '@/lib/hash';
+    import { checkTwoFactorSession } from '@/components/TwoFactorDialog.svelte';
+    import { Tween } from 'svelte/motion';
 
     let fileInput: HTMLInputElement = $state(null as any);
     let uploadProgress: number | null = $state(null);
     let tusUpload: Upload | null = $state(null);
+
+    let tweened = Tween.of(() => uploadProgress ?? 0, {
+        duration: 150
+    });
 
     let {
         project,
@@ -84,8 +90,9 @@
         }[fragment.value] ?? 'info'
     );
 
-    function submitEdit(ev: SubmitEvent) {
+    async function submitEdit(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $editForm.post(`/projects/${project.nanoid}`, {
             preserveState: true,
             preserveScroll: true,
@@ -99,8 +106,9 @@
         });
     }
 
-    function submitVersion(ev: SubmitEvent) {
+    async function submitVersion(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $versionForm.post(`/projects/${project.nanoid}/versions`, {
             preserveState: true,
             onSuccess: () => {
@@ -115,8 +123,9 @@
         });
     }
 
-    function submitEditVersion(ev: SubmitEvent) {
+    async function submitEditVersion(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $editVersionForm.post(`/projects/${project.nanoid}/versions/${editVersion}`, {
             preserveState: true,
             preserveScroll: true,
@@ -267,6 +276,7 @@
                                             }
                                         });
                                         if (res) {
+                                            if (!(await checkTwoFactorSession())) return;
                                             router.delete(
                                                 `/projects/${project.nanoid}/versions/${version.nanoid}`,
                                                 {
@@ -455,7 +465,7 @@
                 >
                     <progress
                         class="progress progress-flat-primary w-0 flex-grow"
-                        value={uploadProgress}
+                        value={tweened.current}
                         max="100"
                         class:hidden={uploadProgress === 100}
                     ></progress>

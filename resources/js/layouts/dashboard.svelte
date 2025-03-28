@@ -99,7 +99,7 @@
                                     class="dropdown-menu dropdown-menu-right-top ml-2 items-center"
                                 >
                                     <button
-                                        class="dropdown-item"
+                                        class="dropdown-item items-start"
                                         class:dropdown-active={theme === null}
                                         onclick={(ev) => {
                                             localStorage.removeItem('theme');
@@ -114,7 +114,7 @@
                                         </span>
                                     </button>
                                     <button
-                                        class="dropdown-item"
+                                        class="dropdown-item items-start"
                                         class:dropdown-active={theme === 'light'}
                                         onclick={(ev) => {
                                             localStorage.setItem('theme', 'light');
@@ -129,7 +129,7 @@
                                         </span>
                                     </button>
                                     <button
-                                        class="dropdown-item"
+                                        class="dropdown-item items-start"
                                         class:dropdown-active={theme === 'dark'}
                                         onclick={(ev) => {
                                             localStorage.setItem('theme', 'dark');

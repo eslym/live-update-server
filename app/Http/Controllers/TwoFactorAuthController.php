@@ -77,11 +77,19 @@ class TwoFactorAuthController extends Controller
 
     public function verify(Request $request): Response
     {
+        $unlockMode = $request->query->getString('mode') === 'unlock';
+
         $data = $request->validate([
             'otp' => ['required', 'string'],
         ]);
 
         if (!Authenticator::verifySession($data['otp'])) {
+            if ($unlockMode) {
+                return response()->json([
+                    'message' => 'Invalid code',
+                ], 401);
+            }
+
             return redirect()->back()
                 ->with('alert', [
                     'title' => 'Invalid code',
@@ -89,6 +97,11 @@ class TwoFactorAuthController extends Controller
                 ]);
         }
 
+        if ($unlockMode) {
+            return response()->json([
+                'message' => 'Unlocked',
+            ]);
+        }
         return redirect()->intended();
     }
 
@@ -121,5 +134,34 @@ class TwoFactorAuthController extends Controller
                 'title' => 'Success',
                 'content' => 'Two-factor authentication has been disabled.',
             ]);
+    }
+
+    public function check(Request $request): Response
+    {
+        $user = $request->user();
+
+        if (!$user->google2fa_secret) {
+            return response()->json([
+                'should_renew' => false,
+                'message' => 'Two-factor authentication is not enabled.',
+            ]);
+        }
+
+        $check = Authenticator::shouldRenew();
+
+        $debug_code = null;
+        if ($check !== 0 && config('google2fa.debug') && config('app.debug')) {
+            $debug_code = Authenticator::getCurrentOTP($user->google2fa_secret);
+        }
+
+        return response()->json([
+            'should_renew' => $check !== 0,
+            'message' => match ($check) {
+                Authenticator::EXPIRED => 'Two-factor authentication expired',
+                Authenticator::NO_SESSION => 'Two-factor authentication required',
+                default => 'Session is valid.',
+            },
+            'debug_code' => $debug_code,
+        ]);
     }
 }

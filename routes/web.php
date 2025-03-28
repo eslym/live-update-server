@@ -93,4 +93,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/2fa/verify', [TwoFactorAuthController::class, 'verify']);
         Route::post('/2fa/disable', [TwoFactorAuthController::class, 'disable']);
     });
+
+    Route::get('/2fa/check', [TwoFactorAuthController::class, 'check']);
 });

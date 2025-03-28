@@ -11,6 +11,7 @@
     import { router, useForm } from '@inertiajs/svelte';
     import FormErrors from '@/components/FormErrors.svelte';
     import { config } from '@/lib/config';
+    import { checkTwoFactorSession } from '@/components/TwoFactorDialog.svelte';
 
     let {
         tokens,
@@ -34,8 +35,9 @@
 
     let createModal = $state(false);
 
-    function submit(ev: SubmitEvent) {
+    async function submit(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $form.post('/tokens', {
             preserveState: true,
             preserveScroll: true,
@@ -107,6 +109,7 @@
                                     }
                                 });
                                 if (res) {
+                                    if (!(await checkTwoFactorSession())) return;
                                     router.delete(`/tokens/${token.id}`, {
                                         replace: true,
                                         preserveState: true,

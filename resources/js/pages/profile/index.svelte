@@ -8,6 +8,7 @@
     import { config } from '@/lib/config';
     import { onMount } from 'svelte';
     import { Copy01Icon } from '@eslym/hugeicons-svelte';
+    import { checkTwoFactorSession } from '@/components/TwoFactorDialog.svelte';
 
     let {
         user,
@@ -41,8 +42,9 @@
         return d;
     });
 
-    function submit(ev: SubmitEvent) {
+    async function submit(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $form.post('/profile', {
             preserveState: true,
             onSuccess: () => {

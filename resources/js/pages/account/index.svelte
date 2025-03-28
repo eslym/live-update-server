@@ -9,6 +9,7 @@
     import { Delete01Icon, PencilEdit01Icon } from '@eslym/hugeicons-svelte';
     import { promptAlert } from '@/components/Alert.svelte';
     import FormErrors from '@/components/FormErrors.svelte';
+    import { checkTwoFactorSession } from '@/components/TwoFactorDialog.svelte';
 
     let {
         accounts,
@@ -49,8 +50,9 @@
         twoFactor: false
     });
 
-    function submitCreate(ev: SubmitEvent) {
+    async function submitCreate(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $createForm.post('/accounts', {
             preserveState: true,
             preserveScroll: true,
@@ -63,8 +65,9 @@
         });
     }
 
-    function submitEdit(ev: SubmitEvent) {
+    async function submitEdit(ev: SubmitEvent) {
         ev.preventDefault();
+        if (!(await checkTwoFactorSession())) return;
         $editForm.post(`/accounts/${editingModal.id}`, {
             preserveState: true,
             preserveScroll: true,
@@ -147,6 +150,7 @@
                                     }
                                 });
                                 if (res) {
+                                    if (!(await checkTwoFactorSession())) return;
                                     router.delete(`/accounts/${account.nanoid}`, {
                                         replace: true,
                                         preserveState: true,

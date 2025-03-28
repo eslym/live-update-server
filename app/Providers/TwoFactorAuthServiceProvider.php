@@ -33,7 +33,8 @@ class TwoFactorAuthServiceProvider extends ServiceProvider
             fn($app) => new Authenticator(
                 $app->make(Google2FA::class),
                 config('google2fa.secret_length'),
-                config('google2fa.keep_alive')
+                config('google2fa.keep_alive'),
+                config('google2fa.renew_time_frame')
             )
         );
 
