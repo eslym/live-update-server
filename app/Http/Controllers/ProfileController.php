@@ -24,9 +24,10 @@ class ProfileController extends Controller
         if ($request->has('password')) {
             if (RateLimiter::tooManyAttempts('password:' . $request->user()->id, 5)) {
                 return redirect()->back()
-                    ->with('alert', [
+                    ->with('toast', [
+                        'type' => 'error',
                         'title' => 'Too many attempts',
-                        'content' => 'You have reached the maximum number of password verification attempts',
+                        'description' => 'You have reached the maximum number of password verification attempts',
                     ]);
             }
             RateLimiter::hit('password:' . $request->user()->id, 3600);
@@ -62,9 +63,9 @@ class ProfileController extends Controller
 
         $user->update($data);
 
-        return redirect()->back()->with('alert', [
-            'title' => 'Success',
-            'content' => 'Password updated successfully.',
+        return redirect()->back()->with('toast', [
+            'type' => 'success',
+            'title' => 'Password updated successfully.',
         ]);
     }
 }

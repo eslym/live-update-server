@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
                 : null,
             'route' => fn() => $request->route()->getName(),
             'alert' => fn() => $request->session()->get('alert'),
+            'toast' => fn() => $request->session()->get('toast'),
         ]);
     }
 }

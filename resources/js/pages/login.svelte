@@ -1,66 +1,73 @@
+<script lang="ts" module>
+    import AuthLayout from '@/layouts/auth.svelte';
+    import illustration from '$assets/illust/auth.svg';
+
+    export const layout = AuthLayout;
+
+    export const layoutProps = new Map([[layout, { illustration }]]);
+</script>
+
 <script lang="ts">
-    import { inertia, useForm } from '@inertiajs/svelte';
-    import FormErrors from '@/components/FormErrors.svelte';
-    import { config } from '@/lib/config';
+    import { config } from '$lib/config';
+    import { useForm } from '@/inertia';
+    import { Button } from '$lib/components/ui/button';
+    import { loading } from '$lib/loading.svelte';
+    import { Input } from '$lib/components/ui/input';
+    import { Label } from '$lib/components/ui/label';
+    import FieldError from '$lib/components/FieldError.svelte';
 
-    const form = useForm('login-form', {
-        email: '',
-        password: ''
-    });
+    const form = useForm(
+        {
+            email: '',
+            password: ''
+        },
+        'login-form'
+    );
 
-    function submit(ev: SubmitEvent) {
-        ev.preventDefault();
-        $form.post('/login', {
-            onError: () => {
-                $form.reset('password');
-            }
-        });
-    }
+    const processing = loading.derived(() => form.processing);
 </script>
 
 <svelte:head>
-    <title>Login | {config.APP_NAME}</title>
+    <title>Setup | {config.APP_NAME}</title>
 </svelte:head>
 
-<div class="min-h-dvh w-full px-4 py-8 flex flex-col justify-center items-center">
-    <form method="post" action="/login" class="form-group max-w-80" onsubmit={submit} novalidate>
-        <h1 class="text-3xl font-semibold w-max max-w-full mx-auto">
-            <img src="/favicon.svg" alt="Logo" class="size-10 inline-block" />
-            {config.APP_NAME}
-        </h1>
-        <div class="form-field mt-6">
-            <label for="email" class="form-label">Email</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                class="input max-w-full"
-                bind:value={$form.email}
-                class:input-error={$form.errors.email}
-            />
-            <FormErrors error={$form.errors.email} />
-        </div>
-        <div class="form-field">
-            <label for="password" class="form-label">Password</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                class="input max-w-full"
-                bind:value={$form.password}
-                class:input-error={$form.errors.password}
-            />
-            <FormErrors error={$form.errors.password} />
-        </div>
-        <div class="form-field pt-5">
-            <div class="form-control justify-between">
-                <button type="submit" class="btn btn-primary w-full" disabled={$form.processing}
-                    >Login
-                </button>
-            </div>
-        </div>
-        <div class="mt-2 text-center">
-            <a use:inertia href="/forgot-password" class="link link-secondary">Forgot Password?</a>
-        </div>
-    </form>
-</div>
+<form
+    class="my-24 flex flex-col gap-2 max-w-sm w-full"
+    novalidate
+    action="/setup"
+    method="post"
+    onsubmit={form.handleSubmit}
+>
+    <h2 class="text-2xl font-semibold text-center">Login</h2>
+    <p class="text-muted-foreground text-center">Please login to your account.</p>
+    <div class="flex flex-col gap-1.5 mt-8">
+        <Label for="email">Email</Label>
+        <Input
+            id="email"
+            type="text"
+            name="email"
+            placeholder="john.doe@example.com"
+            bind:value={form.data.email}
+            disabled={processing.value}
+            required
+        />
+        <FieldError error={form.errors.email} />
+    </div>
+    <div class="flex flex-col gap-1.5">
+        <Label for="password">Password</Label>
+        <Input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="********"
+            bind:value={form.data.password}
+            disabled={processing.value}
+            required
+        />
+        <FieldError error={form.errors.password} />
+    </div>
+    <Button class="mt-12" type="submit" loading={processing.value} disabled={loading.value}
+        >Login</Button
+    >
+    <Button type="button" variant="ghost" disabled={processing.value}>Forgot Password</Button>
+</form>

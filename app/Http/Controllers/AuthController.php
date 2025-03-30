@@ -19,9 +19,10 @@ class AuthController extends Controller
     {
         if (RateLimiter::tooManyAttempts('login:' . $request->ip(), 5)) {
             return redirect()->back()
-                ->with('alert', [
+                ->with('toast', [
+                    'type' => 'error',
                     'title' => 'Too many attempts',
-                    'content' => 'You have reached the maximum number of login attempts',
+                    'description' => 'You have reached the maximum number of login attempts',
                 ]);
         }
 
@@ -55,6 +56,9 @@ class AuthController extends Controller
         auth()->logout();
         Authenticator::clearSession();
 
-        return redirect()->to('/login')->with('alert', 'You have been logged out');
+        return redirect()->to('/login')->with('toast', [
+            'type' => 'success',
+            'title' => 'You have been logged out'
+        ]);
     }
 }

@@ -22,6 +22,10 @@ class SetupController extends Controller
             'is_superadmin' => true,
         ]);
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('toast', [
+            'type' => 'success',
+            'title' => 'Setup Complete',
+            'description' => 'You can now log in with the credentials you just created.',
+        ]);
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Rules\UniqueRule;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,15 +31,12 @@ class AccountController extends Controller
             ])
             ->paginate(15);
 
-        $accounts->through(fn(User $account) => [
-            ...Arr::except($account->toArray(), ['is_superadmin', 'google2fa_secret']),
-            'is_mutable' => $user->id !== $account->id && $user->is_superadmin,
-            'is_2fa_enabled' => $account->google2fa_secret !== null,
-        ]);
-
         $can_create = $user->is_superadmin;
 
-        return inertia('account/index', compact('accounts', 'can_create'));
+        return inertia('account/index', [
+            'accounts' => UserResource::collection($accounts),
+            'can_create' => $can_create,
+        ]);
     }
 
     public function create(Request $request): Response
@@ -58,18 +55,19 @@ class AccountController extends Controller
 
         if (!$user->is_superadmin) {
             return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Error',
-                    'content' => 'You do not have permission to create accounts.',
+                ->with('toast', [
+                    'type' => 'error',
+                    'title' => 'You do not have permission to create accounts.',
                 ]);
         }
 
         User::create($data);
 
+
         return redirect()->back()
-            ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Account created successfully',
+            ->with('toast', [
+                'type' => 'success',
+                'title' => 'Account created successfully',
             ]);
     }
 
@@ -91,25 +89,25 @@ class AccountController extends Controller
 
         if (!$user->is_superadmin) {
             return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Error',
-                    'content' => 'You do not have permission to update accounts.',
+                ->with('toast', [
+                    'type' => 'error',
+                    'title' => 'You do not have permission to update accounts.',
                 ]);
         }
 
         if ($user->id === $account->id) {
             return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Error',
-                    'content' => 'You cannot update your own account, please use the profile settings.',
+                ->with('toast', [
+                    'type' => 'error',
+                    'title' => 'You cannot update your own account, please use the profile settings.',
                 ]);
         }
 
         if ($account->is_superadmin) {
             return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Error',
-                    'content' => 'You cannot update this account.',
+                ->with('toast', [
+                    'type' => 'error',
+                    'title' => 'You cannot update this account.',
                 ]);
         }
 
@@ -130,9 +128,9 @@ class AccountController extends Controller
         $account->update($data);
 
         return redirect()->back()
-            ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Account updated successfully',
+            ->with('toast', [
+                'type' => 'success',
+                'title' => 'Account updated successfully',
             ]);
     }
 
@@ -143,25 +141,25 @@ class AccountController extends Controller
 
         if (!$user->is_superadmin) {
             return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Error',
-                    'content' => 'You do not have permission to delete accounts.',
+                ->with('toast', [
+                    'type' => 'error',
+                    'title' => 'You do not have permission to delete accounts.',
                 ]);
         }
 
         if ($user->id === $account->id) {
             return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Error',
-                    'content' => 'You cannot delete your own account.',
+                ->with('toast', [
+                    'type' => 'error',
+                    'description' => 'You cannot delete your own account.',
                 ]);
         }
 
         if ($account->is_superadmin) {
             return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Error',
-                    'content' => 'You cannot delete this account.',
+                ->with('toast', [
+                    'type' => 'error',
+                    'title' => 'You cannot delete this account.',
                 ]);
         }
 
@@ -169,8 +167,8 @@ class AccountController extends Controller
 
         return redirect()->back()
             ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Account deleted successfully',
+                'toast' => 'success',
+                'title' => 'Account deleted successfully',
             ]);
     }
 }

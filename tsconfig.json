@@ -17,7 +17,9 @@
     "moduleResolution": "bundler",
     "types": ["vite/client"],
     "paths": {
-      "@/*": ["./resources/js/*"]
+      "@/*": ["./resources/js/*"],
+      "$lib/*": ["./resources/js/lib/*"],
+      "$assets/*": ["./resources/assets/*"]
     }
   },
   "include": ["./resources/js/**/*"],

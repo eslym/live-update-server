@@ -39,12 +39,16 @@ return Application::configure(basePath: dirname(__DIR__))
             ) {
                 return $response;
             }
-            return match ($response->getStatusCode()) {
-                404 => inertiaResponse(inertia('errors/404'), 404),
-                405 => inertiaResponse(inertia('errors/405'), 405),
-                500 => config('app.debug') ? $response : inertiaResponse(inertia('errors/500'), 500),
-                503 => inertiaResponse(inertia('errors/503'), 503),
-                default => $response,
-            };
+            if (in_array($response->getStatusCode(), [400, 404, 405, 419, 429, 503])) {
+                return inertiaResponse(inertia('errors', [
+                    'status' => $response->getStatusCode(),
+                ]), $response->getStatusCode());
+            }
+            if ($response->getStatusCode() === 500 && !config('app.debug')) {
+                return inertiaResponse(inertia('errors', [
+                    'status' => 500,
+                ]), 500);
+            }
+            return $response;
         });
     })->create();

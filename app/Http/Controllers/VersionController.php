@@ -78,9 +78,9 @@ class VersionController extends Controller
         ]);
 
         return redirect()->route('project.view', $project)
-            ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Version created successfully',
+            ->with('toast', [
+                'type' => 'success',
+                'title' => 'Version created successfully',
             ]);
     }
 
@@ -108,9 +108,9 @@ class VersionController extends Controller
         ]);
 
         return redirect()->back()
-            ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Version updated successfully',
+            ->with('toast', [
+                'type' => 'success',
+                'title' => 'Version updated successfully',
             ]);
     }
 
@@ -121,9 +121,9 @@ class VersionController extends Controller
         $version->delete();
 
         return redirect()->back()
-            ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Version deleted successfully',
+            ->with('toast', [
+                'type' => 'success',
+                'title' => 'Version deleted successfully',
             ]);
     }
 }

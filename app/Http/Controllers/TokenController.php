@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TokenResource;
 use App\Models\Client;
 use Carbon\CarbonTimeZone;
 use Illuminate\Contracts\Support\Responsable;
@@ -20,7 +21,7 @@ class TokenController extends Controller
         $tokens = $client->tokens()->select(['id', 'name', 'expires_at', 'last_used_at', 'created_at'])->paginate();
 
         return inertia('token/index', [
-            'tokens' => $tokens,
+            'tokens' => TokenResource::collection($tokens),
             'recentCreated' => $request->session()->get('recentCreated'),
         ]);
     }
@@ -56,9 +57,9 @@ class TokenController extends Controller
     {
         Client::first()->tokens()->where('id', $tokenId)->delete();
 
-        return redirect()->back()->with('alert', [
-            'title' => 'Success',
-            'content' => 'Token revoked successfully',
+        return redirect()->back()->with('toast', [
+            'type' => 'success',
+            'title' => 'Token revoked successfully',
         ]);
     }
 }

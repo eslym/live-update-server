@@ -11,13 +11,5 @@
 </head>
 <body>
 @inertia
-<div id="page-spinner"
-     class="fixed z-[99999] inset-0 flex bg-backgroundPrimary items-center justify-center duration-500 transition-opacity"
-     ontransitionend="this.remove();"
->
-    <div class="spinner-dot-pulse spinner-xl">
-        <div class="spinner-pulse-dot"></div>
-    </div>
-</div>
 </body>
 </html>

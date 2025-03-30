@@ -20,7 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $nanoid
@@ -73,6 +73,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'google2fa_secret',
+        'is_superadmin',
     ];
 
     /**

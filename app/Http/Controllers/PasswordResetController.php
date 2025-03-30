@@ -19,18 +19,20 @@ class PasswordResetController extends Controller
 
         if (RateLimiter::tooManyAttempts($rl_key = 'reset-password:' . $data['email'], 1)) {
             return redirect()->back()
-                ->with('alert', [
+                ->with('toast', [
+                    'type' => 'error',
                     'title' => 'Too many requests',
-                    'content' => 'Please wait a few minutes before trying again.',
+                    'description' => 'Please wait a few minutes before trying again.',
                 ]);
         }
         RateLimiter::hit($rl_key, 150);
 
         if (RateLimiter::tooManyAttempts($rl_key = 'reset-password:' . $request->ip(), 15)) {
             return redirect()->back()
-                ->with('alert', [
+                ->with('toast', [
+                    'type' => 'error',
                     'title' => 'Too many requests',
-                    'content' => 'Please wait a few minutes before trying again.',
+                    'description' => 'Please wait a few minutes before trying again.',
                 ]);
         }
         RateLimiter::hit($rl_key, 3600);

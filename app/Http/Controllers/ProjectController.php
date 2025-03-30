@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\VersionCollection;
+use App\Http\Resources\VersionResource;
 use App\Models\Project;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
@@ -70,7 +70,7 @@ class ProjectController extends Controller
                 'public_key',
                 'created_at',
             ]),
-            'versions' => VersionCollection::collection($versions),
+            'versions' => VersionResource::collection($versions),
             'latestRequirements' => $latestRequirements ?? [
                     'android' => ['min' => null, 'max' => null],
                     'ios' => ['min' => null, 'max' => null],
@@ -116,9 +116,9 @@ class ProjectController extends Controller
         $project = Project::query()->create($data);
 
         return redirect()->route('project.view', $project)
-            ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Project created successfully',
+            ->with('toast', [
+                'type' => 'success',
+                'title' => 'Project created successfully',
             ]);
     }
 
@@ -132,9 +132,9 @@ class ProjectController extends Controller
         $project->update($data);
 
         return redirect()->route('project.view', $project)
-            ->with('alert', [
-                'title' => 'Success',
-                'content' => 'Project updated successfully',
+            ->with('toast', [
+                'type' => 'success',
+                'title' => 'Project updated successfully',
             ]);
     }
 
