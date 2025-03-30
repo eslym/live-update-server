@@ -5,9 +5,9 @@
         $props();
 </script>
 
-<div class="min-h-dvh grid max-xl:grid-cols-1 grid-cols-2">
+<div class="min-h-dvh grid max-lg:grid-cols-1 grid-cols-2 mx-auto max-w-screen-xl">
     <div
-        class="relative overflow-hidden max-h-dvh max-xl:hidden flex items-center justify-center select-none"
+        class="relative overflow-hidden max-h-dvh max-lg:hidden flex items-center justify-center select-none"
     >
         {#if illustration}
             <img src={illustration} alt="Illustration" class="size-80 opacity-60" />

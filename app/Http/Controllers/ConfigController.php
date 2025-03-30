@@ -9,6 +9,7 @@ class ConfigController extends Controller
     public function json(): Response
     {
         $configs = [
+            'APP_ENV' => config('app.env'),
             'APP_NAME' => config('app.name'),
             'ENFORCE_2FA' => config('google2fa.enforce'),
         ];

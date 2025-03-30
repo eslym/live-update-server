@@ -23,7 +23,7 @@
             password: '',
             password_confirmation: ''
         },
-        'login-form'
+        'setup-form'
     );
 
     const processing = loading.derived(() => form.processing);
@@ -45,53 +45,53 @@
         Please setup the superadmin account to get started.
     </p>
     <div class="flex flex-col gap-1.5 mt-8">
-        <Label for="name">Name</Label>
+        <Label for="name" required>Name</Label>
         <Input
             id="name"
             type="text"
             name="name"
             placeholder="John Doe"
             bind:value={form.data.name}
-            disabled={processing.value}
+            disabled={loading.value}
             required
         />
         <FieldError error={form.errors.name} />
     </div>
     <div class="flex flex-col gap-1.5">
-        <Label for="email">Email</Label>
+        <Label for="email" required>Email</Label>
         <Input
             id="email"
             type="text"
             name="email"
             placeholder="john.doe@example.com"
             bind:value={form.data.email}
-            disabled={processing.value}
+            disabled={loading.value}
             required
         />
         <FieldError error={form.errors.email} />
     </div>
     <div class="flex flex-col gap-1.5">
-        <Label for="password">Password</Label>
+        <Label for="password" required>Password</Label>
         <Input
             id="password"
             type="password"
             name="password"
             placeholder="********"
             bind:value={form.data.password}
-            disabled={processing.value}
+            disabled={loading.value}
             required
         />
         <FieldError error={form.errors.password} />
     </div>
     <div class="flex flex-col gap-1.5">
-        <Label for="password_confirmation">Confirm Password</Label>
+        <Label for="password_confirmation" required>Confirm Password</Label>
         <Input
             id="password_confirmation"
             type="password"
             name="password_confirmation"
             placeholder="********"
             bind:value={form.data.password_confirmation}
-            disabled={processing.value}
+            disabled={loading.value}
             required
         />
         <FieldError error={form.errors.password_confirmation} />

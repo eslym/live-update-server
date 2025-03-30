@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
@@ -38,7 +39,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [AuthController::class, 'logout']);
 
     Route::middleware([TwoFactorAuth::class])->group(function () {
-        Route::get('/', [ProjectController::class, 'index'])
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard.index');
+
+        Route::get('/projects', [ProjectController::class, 'index'])
             ->name('project.index');
 
         Route::post('/projects', [ProjectController::class, 'create'])

@@ -1,6 +1,6 @@
 <script lang="ts" module>
     import AuthLayout from '@/layouts/auth.svelte';
-    import illustration from '$assets/illust/auth.svg';
+    import illustration from '$assets/illust/password.svg';
 
     export const layout = AuthLayout;
 
@@ -9,7 +9,7 @@
 
 <script lang="ts">
     import { config } from '$lib/config';
-    import { useForm } from '@/inertia';
+    import { useForm, page } from '@/inertia';
     import { Button } from '$lib/components/ui/button';
     import { loading } from '$lib/loading.svelte';
     import { Input } from '$lib/components/ui/input';
@@ -20,42 +20,29 @@
 
     const form = useForm(
         {
-            email: '',
-            password: ''
+            password: '',
+            password_confirmation: ''
         },
-        'login-form'
+        'reset-form'
     );
 
     const processing = loading.derived(() => form.processing);
 </script>
 
 <svelte:head>
-    <title>Login | {config.APP_NAME}</title>
+    <title>Reset Password | {config.APP_NAME}</title>
 </svelte:head>
 
 <form
     class="my-24 flex flex-col gap-2 max-w-sm w-full"
     novalidate
-    action="/login"
+    action={page.url}
     method="post"
     onsubmit={form.handleSubmit}
 >
-    <h1 class="text-2xl font-semibold text-center">{config.APP_NAME}</h1>
-    <p class="text-muted-foreground text-center">Please login to your account.</p>
+    <h1 class="text-2xl font-semibold text-center">Reset Password</h1>
+    <p class="text-muted-foreground text-center">Set a new password for your account.</p>
     <div class="flex flex-col gap-1.5 mt-8">
-        <Label for="email" required>Email</Label>
-        <Input
-            id="email"
-            type="text"
-            name="email"
-            placeholder="john.doe@example.com"
-            bind:value={form.data.email}
-            disabled={loading.value}
-            required
-        />
-        <FieldError error={form.errors.email} />
-    </div>
-    <div class="flex flex-col gap-1.5">
         <Label for="password" required>Password</Label>
         <Input
             id="password"
@@ -66,16 +53,23 @@
             disabled={loading.value}
             required
         />
+        <FieldError error={form.errors.email} />
+    </div>
+    <div class="flex flex-col gap-1.5">
+        <Label for="password_confirmation" required>Confirm Password</Label>
+        <Input
+            id="password_confirmation"
+            type="password"
+            name="password_confirmation"
+            placeholder="********"
+            bind:value={form.data.password_confirmation}
+            disabled={loading.value}
+            required
+        />
         <FieldError error={form.errors.password} />
     </div>
     <Button class="mt-12" type="submit" loading={processing.value} disabled={loading.value}
-        >Login</Button
+        >Reset Password</Button
     >
-    <ForgotPasswordDialog email={form.data.email}>
-        {#snippet children(Trigger)}
-            <Trigger type="button" class={buttonVariants({ variant: 'ghost' })}
-                >Forgot Password</Trigger
-            >
-        {/snippet}
-    </ForgotPasswordDialog>
+    <Button href="/login" variant="ghost" disabled={loading.value}>Login</Button>
 </form>

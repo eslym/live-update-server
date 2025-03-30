@@ -15,6 +15,7 @@ export const config = new Proxy(src, {
     }
 }) as {
     TIMEZONE: string;
+    APP_ENV: string;
     APP_NAME: string;
     ENFORCE_2FA: boolean;
 };

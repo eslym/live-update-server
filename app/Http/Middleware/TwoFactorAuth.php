@@ -24,12 +24,19 @@ class TwoFactorAuth
         }
 
         if ($user->google2fa_secret === null) {
-            if (config('google2fa.enforce'))
-                return redirect()->route('profile.2fa.setup');
+            if (config('google2fa.enforce')) {
+                session()->reflash();
+                return redirect()->route('profile.2fa.setup')
+                    ->with('alert', [
+                        'title' => 'Two-factor authentication required',
+                        'content' => 'You need to set up two-factor authentication in order to continue.',
+                    ]);
+            }
             return $next($request);
         }
 
         if ($check = Authenticator::isExpired()) {
+            session()->reflash();
             session()->put('url.intended', $request->fullUrl());
             return redirect()->route('profile.2fa.verify')
                 ->with('alert',

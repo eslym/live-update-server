@@ -26,7 +26,14 @@ class TwoFactorAuthController extends Controller
             ? Authenticator::getCurrentOTP($secret)
             : null;
 
-        return inertia('2fa/setup', compact('secret', 'qr', 'debug_code'));
+        return inertia('2fa/setup', [
+            ...compact('secret', 'qr', 'debug_code'),
+            'title' => 'Setup 2FA',
+            'breadcrumbs' => [
+                ['label' => '2FA'],
+                ['label' => 'Setup', 'href' => route('profile.2fa.setup')],
+            ],
+        ]);
     }
 
     public function store(Request $request)
@@ -68,6 +75,11 @@ class TwoFactorAuthController extends Controller
     {
         return inertia('2fa/verify',
             [
+                'title' => 'Verify 2FA',
+                'breadcrumbs' => [
+                    ['label' => '2FA'],
+                    ['label' => 'Setup', 'href' => route('profile.2fa.verify')],
+                ],
                 'debug_code' => config('google2fa.debug') && config('app.debug')
                     ? Authenticator::getCurrentOTP(auth()->user()->google2fa_secret)
                     : null,
@@ -78,6 +90,22 @@ class TwoFactorAuthController extends Controller
     public function verify(Request $request): Response
     {
         $unlockMode = $request->query->getString('mode') === 'unlock';
+
+        if (RateLimiter::tooManyAttempts("2fa-verify:".$request->user()->id, 5)) {
+            if($unlockMode) {
+                return response()->json([
+                    'message' => 'Too many attempts',
+                ], 429);
+            }
+            return back()->with(['toast' => [
+                'type' => 'error',
+                'title' => 'Too many attempts',
+                'description' => 'You have reached the maximum number of verification attempts',
+            ]])
+                ->withErrors([]);
+        }
+
+        RateLimiter::hit("2fa-verify:".$request->user()->id, 300);
 
         $data = $request->validate([
             'otp' => ['required', 'string'],
@@ -97,6 +125,8 @@ class TwoFactorAuthController extends Controller
                 ]);
         }
 
+        RateLimiter::clear("2fa-verify:".$request->user()->id);
+
         if ($unlockMode) {
             return response()->json([
                 'message' => 'Unlocked',
@@ -111,13 +141,15 @@ class TwoFactorAuthController extends Controller
         $user = $request->user();
 
         if (RateLimiter::tooManyAttempts("password:$user->id", 5)) {
-            return back()->with(['alert' => [
+            return back()->with(['toast' => [
+                'type' => 'error',
                 'title' => 'Too many attempts',
-                'content' => 'Please try again later.',
-            ]]);
+                'description' => 'You have reached the maximum number of password verification attempts',
+            ]])
+                ->withErrors([]);
         }
 
-        RateLimiter::hit("disable-2fa:$user->id", 300);
+        RateLimiter::hit("password:$user->id", 300);
 
         $request->validate([
             'password' => ['required', 'current_password'],

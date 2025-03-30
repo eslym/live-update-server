@@ -28,7 +28,8 @@ class ProfileController extends Controller
                         'type' => 'error',
                         'title' => 'Too many attempts',
                         'description' => 'You have reached the maximum number of password verification attempts',
-                    ]);
+                    ])
+                    ->withErrors([]);
             }
             RateLimiter::hit('password:' . $request->user()->id, 3600);
         }

@@ -23,7 +23,8 @@ class AuthController extends Controller
                     'type' => 'error',
                     'title' => 'Too many attempts',
                     'description' => 'You have reached the maximum number of login attempts',
-                ]);
+                ])
+                ->withErrors([]);
         }
 
         RateLimiter::hit('login:' . $request->ip(), 3600);
@@ -41,9 +42,14 @@ class AuthController extends Controller
             /** @var User $user */
             $user = auth()->user();
 
-            return $user->google2fa_secret ?
+            $res = $user->google2fa_secret ?
                 redirect()->route('profile.2fa.verify') :
                 redirect()->intended();
+
+            return $res->with('toast', [
+                'type' => 'success',
+                'title' => 'You are logged in',
+            ]);
         }
 
         $validator->errors()->add('email', 'Invalid credentials');

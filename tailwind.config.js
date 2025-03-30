@@ -1,5 +1,6 @@
-import { fontFamily } from 'tailwindcss/defaultTheme';
+import { fontFamily, screens } from 'tailwindcss/defaultTheme';
 import tailwindcssAnimate from 'tailwindcss-animate';
+import containerQueries from '@tailwindcss/container-queries';
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -90,7 +91,7 @@ const config = {
             }
         }
     },
-    plugins: [tailwindcssAnimate]
+    plugins: [tailwindcssAnimate, containerQueries]
 };
 
 export default config;

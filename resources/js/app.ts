@@ -7,6 +7,7 @@ import Progress, { progress } from '$lib/components/LoadingProgress.svelte';
 import { toast } from 'svelte-sonner';
 import ThemeWatcher from '$lib/components/ThemeWatcher.svelte';
 import { Toaster } from '$lib/components/ui/sonner';
+import AlertDialog from '$lib/dialogs/AlertDialog.svelte';
 
 const pages = import.meta.glob('./pages/**/*.svelte');
 
@@ -38,8 +39,21 @@ router.on('progress', (event) => {
 page.onUpdated((page) => {
     if (page?.props?.alert || page?.props?.toast) {
         router.replace({
+            preserveState: true,
             props: (props) => {
                 if (props.alert) {
+                    const alertData = props.alert as {
+                        title: string;
+                        content: string;
+                    };
+                    mount(AlertDialog, {
+                        target: document.body,
+                        props: {
+                            title: alertData.title,
+                            description: alertData.content,
+                            openOnMount: true
+                        }
+                    });
                     delete props.alert;
                 }
                 if (props.toast) {

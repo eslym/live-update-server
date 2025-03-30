@@ -23,7 +23,8 @@ class PasswordResetController extends Controller
                     'type' => 'error',
                     'title' => 'Too many requests',
                     'description' => 'Please wait a few minutes before trying again.',
-                ]);
+                ])
+                ->withErrors([]);
         }
         RateLimiter::hit($rl_key, 150);
 
@@ -33,7 +34,8 @@ class PasswordResetController extends Controller
                     'type' => 'error',
                     'title' => 'Too many requests',
                     'description' => 'Please wait a few minutes before trying again.',
-                ]);
+                ])
+                ->withErrors([]);
         }
         RateLimiter::hit($rl_key, 3600);
 
@@ -67,7 +69,7 @@ class PasswordResetController extends Controller
         $user = User::where('email', $request->query->getString('email'))->first();
 
         if (!$user || !Password::tokenExists($user, $token)) {
-            return redirect()->route('password.forgot')
+            return redirect()->route('login')
                 ->with('alert', [
                     'title' => 'Expired',
                     'content' => 'The password reset link has expired, please request a new one.',

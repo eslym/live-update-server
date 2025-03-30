@@ -92,7 +92,7 @@
     {#if components.length > 0}
         {@const Layout = layouts[0]}
         {@const layoutProps = component.layoutProps?.get(Layout) ?? {}}
-        <Layout {...layoutProps} {...pageData.props}>
+        <Layout {...pageData.props} {...layoutProps}>
             {@render layout(components.slice(1), Children)}
         </Layout>
     {:else}

@@ -9,6 +9,7 @@
     } from '@inertiajs/core';
     import { on } from 'svelte/events';
     import { pick } from 'lodash-es';
+    import { page } from './app.svelte';
 
     type EventsAttributes<K extends GlobalEventNames> = {
         [P in `onvisit${K}`]?: P extends `onvisit${infer E extends GlobalEventNames}`
@@ -72,8 +73,12 @@
         }
 
         function prefetch() {
+            const url = new URL(get_href(), window.location.href);
+            if (url.origin !== location.origin) {
+                return;
+            }
             router.prefetch(
-                get_href(),
+                url,
                 {
                     ...params(),
                     onPrefetching(visit) {
@@ -131,8 +136,12 @@
 
         const offclick = on(node, 'click', (e) => {
             if (!shouldIntercept(e)) return;
+            const url = new URL(get_href(), window.location.href);
+            if (url.origin !== location.origin) {
+                return;
+            }
             e.preventDefault();
-            router.visit(get_href(), {
+            router.visit(url, {
                 ...params(),
                 ...pick(opts, 'onBefore', 'onCancel', 'onCancelToken'),
                 onStart(visit) {
