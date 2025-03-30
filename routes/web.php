@@ -55,12 +55,14 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/projects/{project}', [ProjectController::class, 'delete'])
             ->name('project.delete');
 
+        Route::get('/projects/{project}/versions', [VersionController::class, 'list'])
+            ->name('project.version.index');
         Route::post('/projects/{project}/versions', [VersionController::class, 'create'])
-            ->name('version.create');
+            ->name('project.version.create');
         Route::post('/projects/{project}/versions/{version}', [VersionController::class, 'update'])
-            ->name('version.update');
+            ->name('project.version.update');
         Route::delete('/projects/{project}/versions/{version}', [VersionController::class, 'delete'])
-            ->name('version.delete');
+            ->name('project.version.delete');
 
         Route::get('/profile', [ProfileController::class, 'index'])
             ->name('profile');

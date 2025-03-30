@@ -47,15 +47,6 @@ final class Authenticator
             return false;
         }
 
-        if (!preg_match('/^[0-9]{6}$/', $otp)) {
-            if (!$user->recovery_codes()->where('code', $otp)->count()) {
-                return false;
-            }
-            $user->recovery_codes()->where('code', $otp)->delete();
-            session()->put('google2fa_timestamp', time());
-            return true;
-        }
-
         $secret = $user->google2fa_secret;
         if (!$secret) {
             return false;

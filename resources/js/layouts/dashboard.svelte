@@ -1,3 +1,9 @@
+<script lang="ts" module>
+    function isRoute(route: string | null, group: string) {
+        return Boolean(route && (route === group || route.startsWith(group + '.')));
+    }
+</script>
+
 <script lang="ts">
     import type { Snippet } from 'svelte';
     import * as Sidebar from '$lib/components/ui/sidebar';
@@ -19,6 +25,8 @@
     import { local } from '$lib/storage';
     import { Separator } from '$lib/components/ui/separator';
 
+    type _keep = [typeof Sidebar, typeof Dropdown, typeof Breadcrumb, typeof Separator];
+
     let {
         route,
         children,
@@ -26,17 +34,11 @@
         breadcrumbs = [],
         title
     }: {
-        route: string;
+        route: string | null;
         children: Snippet;
         breadcrumbs?: { label: string; href?: string }[] | null;
         title?: string;
-        user: {
-            id: number;
-            nanoid: string;
-            name: string;
-            email: string;
-            ['2fa_enabled']: boolean;
-        };
+        user: User;
     } = $props();
 </script>
 
@@ -69,7 +71,7 @@
                 <Sidebar.GroupContent>
                     <Sidebar.Menu>
                         <Sidebar.MenuItem>
-                            <Sidebar.MenuButton isActive={route?.startsWith('project.')}>
+                            <Sidebar.MenuButton isActive={isRoute(route, 'project')}>
                                 {#snippet child({ props })}
                                     <a {...props} href="/projects" use:inertia>
                                         <FolderKanbanIcon class="size-4 mr-2" />
@@ -79,7 +81,7 @@
                             </Sidebar.MenuButton>
                         </Sidebar.MenuItem>
                         <Sidebar.MenuItem>
-                            <Sidebar.MenuButton isActive={route?.startsWith('account.')}>
+                            <Sidebar.MenuButton isActive={isRoute(route, 'account')}>
                                 {#snippet child({ props })}
                                     <a {...props} href="/accounts" use:inertia>
                                         <UsersRoundIcon class="size-4 mr-2" />
@@ -89,7 +91,7 @@
                             </Sidebar.MenuButton>
                         </Sidebar.MenuItem>
                         <Sidebar.MenuItem>
-                            <Sidebar.MenuButton isActive={route?.startsWith('token.')}>
+                            <Sidebar.MenuButton isActive={isRoute(route, 'token')}>
                                 {#snippet child({ props })}
                                     <a {...props} href="/tokens" use:inertia>
                                         <LockKeyholeIcon class="size-4 mr-2" />
@@ -109,7 +111,7 @@
                         <Sidebar.MenuButton
                             {...props}
                             class="flex flex-row-reverse h-auto"
-                            isActive={route?.startsWith('profile.')}
+                            isActive={isRoute(route, 'profile')}
                         >
                             <ChevronRightIcon />
                             <div
@@ -170,7 +172,7 @@
         </Sidebar.Footer>
     </Sidebar.Root>
     <Sidebar.Inset>
-        <header class="px-4 py-2 flex flex-row justify-between gap-8 font-semibold">
+        <header class="pl-4 pr-6 py-2 flex flex-row justify-between gap-8 font-semibold">
             <Breadcrumb.Root>
                 <Breadcrumb.List>
                     <Breadcrumb.Item>

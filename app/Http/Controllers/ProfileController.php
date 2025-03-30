@@ -16,6 +16,10 @@ class ProfileController extends Controller
     {
         return inertia('profile/index', [
             'recovery_codes' => session()->get('recovery_codes'),
+            'title' => 'Profile',
+            'breadcrumbs' => [
+                ['label' => 'Profile', 'href' => route('profile')],
+            ],
         ]);
     }
 

@@ -13,6 +13,8 @@
     import { Button } from '$lib/components/ui/button';
     import { loading } from '$lib/loading.svelte';
 
+    type _keep = [typeof InputOTP];
+
     let {
         secret,
         qr,
@@ -108,8 +110,9 @@
                 class="px-16"
                 type="submit"
                 loading={processing.value}
-                disabled={loading.value}>Submit</Button
-            >
+                disabled={loading.or(form.data.otp.length !== 6)}
+                >Submit
+            </Button>
         </form>
     </div>
 </div>

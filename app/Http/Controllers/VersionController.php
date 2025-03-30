@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Version;
 use App\Rules\UniqueRule;
 use App\Rules\VersionRequirementsRule;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VersionController extends Controller
 {
+    public function list(Request $request, Project $project): Responsable {
+
+    }
+
     /**
      * @throws ValidationException
      */

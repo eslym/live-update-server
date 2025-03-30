@@ -7,6 +7,14 @@ declare global {
 
     type Timeout = ReturnType<typeof setTimeout>;
 
+    interface User {
+        id: number;
+        nanoid: string;
+        name: string;
+        email: string;
+        ['2fa_enabled']: boolean;
+    }
+
     interface Pagination<T> {
         data: T[];
         meta: {

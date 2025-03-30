@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\VersionResource;
+use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
@@ -14,54 +14,32 @@ class ProjectController extends Controller
 {
     public function index(): Responsable
     {
-        $projects = Project::query()->with([
-            'versions' => fn($query) => $query->orderByDesc('created_at')->limit(1)
-                ->select([
-                    'id',
-                    'project_id',
-                    'name',
-                ]),
-        ])->select([
-            'id',
-            'nanoid',
-            'name',
-            'created_at',
-        ])->paginate(15);
+        $projects = ProjectResource::collection(
+            Project::query()->with([
+                'versions' => fn($query) => $query->orderByDesc('created_at')->limit(1)
+                    ->select([
+                        'id',
+                        'project_id',
+                        'name',
+                    ]),
+            ])->select([
+                'id',
+                'nanoid',
+                'name',
+                'created_at',
+            ])->paginate(15)
+        );
 
         return inertia('project/index', compact('projects'));
     }
 
     public function view(Project $project): Responsable
     {
-        $versions = $project->versions()
-            ->with('channel:id,name')
-            ->orderByDesc('created_at')
-            ->select([
-                'id',
-                'nanoid',
-                'project_id',
-                'channel_id',
-                'name',
-                'created_at',
-                'android_available',
-                'android_min',
-                'android_max',
-                'ios_available',
-                'ios_min',
-                'ios_max',
-            ])
-            ->paginate();
-
-        $latestRequirements = $project->versions()->orderByDesc('created_at')->first([
-            'android_available',
-            'android_min',
-            'android_max',
-            'ios_available',
-            'ios_min',
-            'ios_max',
-        ])?->requirements;
+        $versions = $project->versions()->count();
+        $channels = $project->channels()->count();
 
         return inertia('project/view', [
+            ...compact('versions', 'channels'),
             'project' => $project->only([
                 'id',
                 'nanoid',
@@ -70,11 +48,6 @@ class ProjectController extends Controller
                 'public_key',
                 'created_at',
             ]),
-            'versions' => VersionResource::collection($versions),
-            'latestRequirements' => $latestRequirements ?? [
-                    'android' => ['min' => null, 'max' => null],
-                    'ios' => ['min' => null, 'max' => null],
-                ],
         ]);
     }
 

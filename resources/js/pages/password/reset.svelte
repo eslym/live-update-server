@@ -15,8 +15,6 @@
     import { Input } from '$lib/components/ui/input';
     import { Label } from '$lib/components/ui/label';
     import FieldError from '$lib/components/FieldError.svelte';
-    import ForgotPasswordDialog from '$lib/dialogs/ForgotPasswordDialog.svelte';
-    import { buttonVariants } from '$lib/components/ui/button';
 
     const form = useForm(
         {

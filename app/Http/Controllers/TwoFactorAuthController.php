@@ -78,7 +78,7 @@ class TwoFactorAuthController extends Controller
                 'title' => 'Verify 2FA',
                 'breadcrumbs' => [
                     ['label' => '2FA'],
-                    ['label' => 'Setup', 'href' => route('profile.2fa.verify')],
+                    ['label' => 'Verify', 'href' => route('profile.2fa.verify')],
                 ],
                 'debug_code' => config('google2fa.debug') && config('app.debug')
                     ? Authenticator::getCurrentOTP(auth()->user()->google2fa_secret)
@@ -91,8 +91,8 @@ class TwoFactorAuthController extends Controller
     {
         $unlockMode = $request->query->getString('mode') === 'unlock';
 
-        if (RateLimiter::tooManyAttempts("2fa-verify:".$request->user()->id, 5)) {
-            if($unlockMode) {
+        if (RateLimiter::tooManyAttempts("2fa-verify:" . $request->user()->id, 5)) {
+            if ($unlockMode) {
                 return response()->json([
                     'message' => 'Too many attempts',
                 ], 429);
@@ -105,27 +105,37 @@ class TwoFactorAuthController extends Controller
                 ->withErrors([]);
         }
 
-        RateLimiter::hit("2fa-verify:".$request->user()->id, 300);
-
         $data = $request->validate([
-            'otp' => ['required', 'string'],
+            'type' => ['required', 'string', 'in:otp,recovery'],
+            'otp' => ['required_if:type,otp', 'nullable', 'string', 'digits:6'],
+            'code' => ['required_if:type,recovery', 'nullable', 'string', 'digits:9'],
         ]);
 
-        if (!Authenticator::verifySession($data['otp'])) {
-            if ($unlockMode) {
-                return response()->json([
-                    'message' => 'Invalid code',
-                ], 401);
+        if ($data['type'] === 'otp') {
+            if (!Authenticator::verifySession($data['otp'])) {
+                RateLimiter::hit("2fa-verify:" . $request->user()->id, 300);
+                return $this->invalid($unlockMode);
+            }
+        } else {
+            /** @var User $user */
+            $user = $request->user();
+            $code = preg_replace(
+                '/^(\d{3})(\d{3})(\d{3})$/',
+                '$1-$2-$3',
+                $data['code']
+            );
+            $recovery_code = $user->recovery_codes()
+                ->where('code', $code)
+                ->first();
+            if (!$recovery_code) {
+                RateLimiter::hit("2fa-verify:" . $request->user()->id, 300);
+                return $this->invalid($unlockMode);
             }
 
-            return redirect()->back()
-                ->with('alert', [
-                    'title' => 'Invalid code',
-                    'content' => 'The code you entered is invalid.',
-                ]);
+            $recovery_code->delete();
         }
 
-        RateLimiter::clear("2fa-verify:".$request->user()->id);
+        RateLimiter::clear("2fa-verify:" . $request->user()->id);
 
         if ($unlockMode) {
             return response()->json([
@@ -195,5 +205,20 @@ class TwoFactorAuthController extends Controller
             },
             'debug_code' => $debug_code,
         ]);
+    }
+
+    private function invalid(bool $unlockMode): Response
+    {
+        if ($unlockMode) {
+            return response()->json([
+                'message' => 'Invalid code',
+            ], 401);
+        }
+
+        return redirect()->back()
+            ->with('alert', [
+                'title' => 'Invalid code',
+                'content' => 'The code you entered is invalid.',
+            ]);
     }
 }
