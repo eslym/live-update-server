@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TokenResource;
+use App\Lib\Utils;
 use App\Models\Client;
-use Carbon\CarbonTimeZone;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class TokenController extends Controller
 {
@@ -18,10 +17,56 @@ class TokenController extends Controller
         /** @var Client $client */
         $client = Client::first();
 
-        $tokens = $client->tokens()->select(['id', 'name', 'expires_at', 'last_used_at', 'created_at'])->paginate();
+        $query = $client->tokens()
+            ->select(['id', 'name', 'expires_at', 'last_used_at', 'created_at']);
+
+        switch ($use = $request->query->getString('use')) {
+            case 'used':
+                $query->whereNotNull('last_used_at');
+                break;
+            case 'unused':
+                $query->whereNull('last_used_at');
+                break;
+        }
+
+        switch ($exp = $request->query->getString('exp')) {
+            case 'expired':
+                $query->where('expires_at', '<', Carbon::now());
+                break;
+            case 'active':
+                $query->where(
+                    fn($query) => $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', Carbon::now())
+                );
+                break;
+            case 'permanent':
+                $query->whereNull('expires_at');
+                break;
+        }
+
+        if ($search = $request->query->getString('q')) {
+            $keywords = preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY);
+            $query->where(function ($query) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $query->orWhere('name', 'like', $keyword);
+                }
+            });
+        }
+
+        Utils::makeSort($query, ['name', 'expires_at', 'last_used_at', 'created_at']);
 
         return inertia('token/index', [
-            'tokens' => TokenResource::collection($tokens),
+            'title' => 'API Tokens',
+            'tokens' => fn() => TokenResource::collection($query->paginate())->additional([
+                'meta' => [
+                    'params' => [
+                        'use' => $use,
+                        'exp' => $exp,
+                        'q' => $search,
+                        'sort' => $request->query->getString('sort'),
+                    ]
+                ]
+            ]),
             'recentCreated' => $request->session()->get('recentCreated'),
         ]);
     }
@@ -36,12 +81,7 @@ class TokenController extends Controller
         $client = Client::first();
 
         if ($data['expires_at']) {
-            $timezone = null;
-            try {
-                $timezone = CarbonTimeZone::create($request->string('_tz', config('app.timezone'))->value());
-            } catch (Throwable) {
-            }
-            $data['expires_at'] = Carbon::parse($data['expires_at'], $timezone)
+            $data['expires_at'] = Carbon::parse($data['expires_at'], Utils::getClientTimezone())
                 ->timezone(config('app.timezone'));
         }
 

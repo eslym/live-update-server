@@ -5,16 +5,15 @@ const subscribe = createSubscriber((update) => {
     notify = update;
     return () => (notify = () => {});
 });
-const src = {
-    TIMEZONE: Intl.DateTimeFormat().resolvedOptions().timeZone
-};
+
+const src = {};
+
 export const config = new Proxy(src, {
     get(target: {}, p: string | symbol, receiver: any): any {
         subscribe();
         return Reflect.get(target, p, receiver);
     }
 }) as {
-    TIMEZONE: string;
     APP_ENV: string;
     APP_NAME: string;
     ENFORCE_2FA: boolean;

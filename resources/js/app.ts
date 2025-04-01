@@ -17,22 +17,18 @@ router.on(
     'start',
     () =>
         (timeout = setTimeout(() => {
-            progress.set(progress.target, { duration: 0 });
-            progress.show = true;
+            progress.start();
         }, 250))
 );
 
 router.on('finish', () => {
     clearTimeout(timeout);
+    progress.end();
 });
 
 router.on('progress', (event) => {
     if (event.detail.progress?.percentage) {
-        progress.set(event.detail.progress.percentage).then(() => {
-            if (progress.target === 100) {
-                progress.show = false;
-            }
-        });
+        progress.set(event.detail.progress.percentage);
     }
 });
 

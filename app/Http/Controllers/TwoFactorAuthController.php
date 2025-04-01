@@ -26,14 +26,7 @@ class TwoFactorAuthController extends Controller
             ? Authenticator::getCurrentOTP($secret)
             : null;
 
-        return inertia('2fa/setup', [
-            ...compact('secret', 'qr', 'debug_code'),
-            'title' => 'Setup 2FA',
-            'breadcrumbs' => [
-                ['label' => '2FA'],
-                ['label' => 'Setup', 'href' => route('profile.2fa.setup')],
-            ],
-        ]);
+        return inertia('2fa/setup', compact('secret', 'qr', 'debug_code'));
     }
 
     public function store(Request $request)
@@ -75,11 +68,6 @@ class TwoFactorAuthController extends Controller
     {
         return inertia('2fa/verify',
             [
-                'title' => 'Verify 2FA',
-                'breadcrumbs' => [
-                    ['label' => '2FA'],
-                    ['label' => 'Verify', 'href' => route('profile.2fa.verify')],
-                ],
                 'debug_code' => config('google2fa.debug') && config('app.debug')
                     ? Authenticator::getCurrentOTP(auth()->user()->google2fa_secret)
                     : null,

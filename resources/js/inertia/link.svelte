@@ -17,11 +17,6 @@
             : never;
     };
 
-    export type ActionOptions = {
-        prefetch?: boolean | 'hover' | 'click';
-        cacheFor?: number;
-    } & Omit<VisitOptions, 'prefetch'>;
-
     type TriggerEvents =
         | 'start'
         | 'progress'
@@ -30,6 +25,11 @@
         | 'finish'
         | 'prefetched'
         | 'prefetching';
+
+    export type ActionOptions = {
+        prefetch?: boolean | 'hover' | 'click';
+        cacheFor?: number;
+    } & Omit<VisitOptions, 'prefetch'>;
 
     function is_anchor(target: EventTarget): target is HTMLAnchorElement {
         return target instanceof HTMLElement && target.tagName === 'A';

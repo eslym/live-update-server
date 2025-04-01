@@ -8,7 +8,6 @@
     import type { Snippet } from 'svelte';
     import * as Sidebar from '$lib/components/ui/sidebar';
     import * as Dropdown from '$lib/components/ui/dropdown-menu';
-    import * as Breadcrumb from '$lib/components/ui/breadcrumb';
     import { config } from '$lib/config';
     import { inertia } from '@/inertia';
     import {
@@ -23,35 +22,23 @@
         LockKeyholeIcon
     } from '@lucide/svelte';
     import { local } from '$lib/storage';
-    import { Separator } from '$lib/components/ui/separator';
+    import { loading } from '$lib/loading.svelte';
 
-    type _keep = [typeof Sidebar, typeof Dropdown, typeof Breadcrumb, typeof Separator];
+    type _keep = [typeof Sidebar, typeof Dropdown];
 
     let {
         route,
         children,
-        user,
-        breadcrumbs = [],
-        title
+        user
     }: {
         route: string | null;
         children: Snippet;
-        breadcrumbs?: { label: string; href?: string }[] | null;
-        title?: string;
         user: User;
     } = $props();
 </script>
 
-<svelte:head>
-    {#if title}
-        <title>{title} | {config.APP_NAME}</title>
-    {:else}
-        <title>{config.APP_NAME}</title>
-    {/if}
-</svelte:head>
-
 <Sidebar.Provider>
-    <Sidebar.Root variant="inset" collapsible="icon">
+    <Sidebar.Root variant="inset" collapsible="icon" inert={loading.value}>
         <Sidebar.Header>
             <Sidebar.MenuButton class="flex flex-row items-center gap-2.5 h-auto">
                 {#snippet child({ props })}
@@ -95,7 +82,7 @@
                                 {#snippet child({ props })}
                                     <a {...props} href="/tokens" use:inertia>
                                         <LockKeyholeIcon class="size-4 mr-2" />
-                                        Tokens
+                                        API Tokens
                                     </a>
                                 {/snippet}
                             </Sidebar.MenuButton>
@@ -172,33 +159,6 @@
         </Sidebar.Footer>
     </Sidebar.Root>
     <Sidebar.Inset>
-        <header class="pl-4 pr-6 py-2 flex flex-row justify-between gap-8 font-semibold">
-            <Breadcrumb.Root>
-                <Breadcrumb.List>
-                    <Breadcrumb.Item>
-                        <Sidebar.Trigger />
-                    </Breadcrumb.Item>
-                    {#each breadcrumbs ?? [] as item}
-                        <Breadcrumb.Separator />
-                        <Breadcrumb.Item>
-                            {#if item.href}
-                                <Breadcrumb.Link href={item.href}>
-                                    {item.label}
-                                </Breadcrumb.Link>
-                            {:else}
-                                {item.label}
-                            {/if}
-                        </Breadcrumb.Item>
-                    {/each}
-                </Breadcrumb.List>
-            </Breadcrumb.Root>
-            {#if title}
-                <h1>{title}</h1>
-            {/if}
-        </header>
-        <Separator />
-        <div class="flex-grow overflow-auto @container">
-            {@render children()}
-        </div>
+        {@render children()}
     </Sidebar.Inset>
 </Sidebar.Provider>

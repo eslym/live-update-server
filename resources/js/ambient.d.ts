@@ -15,7 +15,7 @@ declare global {
         ['2fa_enabled']: boolean;
     }
 
-    interface Pagination<T> {
+    interface Pagination<T, A extends Record<string, any> = {}> {
         data: T[];
         meta: {
             current_page: number;
@@ -24,7 +24,7 @@ declare global {
             per_page: number;
             to: number;
             total: number;
-        };
+        } & A;
         links: {
             first: string;
             last: string;

@@ -36,7 +36,7 @@
     novalidate
     action={page.url}
     method="post"
-    onsubmit={form.handleSubmit}
+    use:form.action
 >
     <h1 class="text-2xl font-semibold text-center">Reset Password</h1>
     <p class="text-muted-foreground text-center">Set a new password for your account.</p>

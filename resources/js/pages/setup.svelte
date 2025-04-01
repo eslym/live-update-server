@@ -24,7 +24,11 @@
             password_confirmation: ''
         },
         'setup-form'
-    );
+    ).remember((data) => {
+        data.password = '';
+        data.password_confirmation = '';
+        return data;
+    });
 
     const processing = loading.derived(() => form.processing);
 </script>
@@ -38,7 +42,7 @@
     novalidate
     action="/setup"
     method="post"
-    onsubmit={form.handleSubmit}
+    use:form.action
 >
     <h2 class="text-2xl font-semibold text-center">Setup</h2>
     <p class="text-muted-foreground text-center">
@@ -97,6 +101,6 @@
         <FieldError error={form.errors.password_confirmation} />
     </div>
     <Button class="mt-12" type="submit" loading={processing.value} disabled={loading.value}
-        >Submit</Button
-    >
+        >Submit
+    </Button>
 </form>

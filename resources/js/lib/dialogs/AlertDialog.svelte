@@ -31,6 +31,8 @@
             <Dialog.Title>{title}</Dialog.Title>
             <Dialog.Description>{description}</Dialog.Description>
         </Dialog.Header>
-        <Dialog.Close class="{buttonVariants({ variant: 'secondary' })}}">Close</Dialog.Close>
+        <Dialog.Footer>
+            <Dialog.Close class="{buttonVariants({ variant: 'secondary' })}}">Close</Dialog.Close>
+        </Dialog.Footer>
     </Dialog.Content>
 </Dialog.Root>

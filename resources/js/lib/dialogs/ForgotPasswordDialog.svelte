@@ -43,13 +43,7 @@
 >
     {@render children?.(Dialog.Trigger)}
     <Dialog.Content>
-        <form
-            class="contents"
-            method="post"
-            action="/forgot-password"
-            novalidate
-            onsubmit={form.handleSubmit}
-        >
+        <form class="contents" method="post" action="/forgot-password" novalidate use:form.action>
             <Dialog.Header>
                 <Dialog.Title>Forgot Password</Dialog.Title>
                 <Dialog.Description>
