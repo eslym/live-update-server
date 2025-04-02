@@ -57,16 +57,17 @@ class TokenController extends Controller
 
         return inertia('token/index', [
             'title' => 'API Tokens',
-            'tokens' => fn() => TokenResource::collection($query->paginate())->additional([
-                'meta' => [
-                    'params' => [
-                        'use' => $use,
-                        'exp' => $exp,
-                        'q' => $search,
-                        'sort' => $request->query->getString('sort'),
+            'tokens' => fn() => TokenResource::collection($query->paginate(20))
+                ->additional([
+                    'meta' => [
+                        'params' => [
+                            'use' => $use,
+                            'exp' => $exp,
+                            'q' => $search,
+                            'sort' => $request->query->getString('sort'),
+                        ]
                     ]
-                ]
-            ]),
+                ]),
             'recentCreated' => $request->session()->get('recentCreated'),
         ]);
     }

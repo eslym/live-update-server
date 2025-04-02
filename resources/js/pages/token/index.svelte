@@ -13,6 +13,9 @@
     import { useForm } from '@/inertia';
     import { debounce } from '$lib/debounce.svelte';
     import DashboardMain from '$lib/components/DashboardMain.svelte';
+    import TableSortCol from '$lib/dialogs/TableSortCol.svelte';
+    import { loading } from '$lib/loading.svelte';
+    import { Separator } from '$lib/components/ui/separator';
 
     type _keep = [typeof Table, typeof Dialog];
 
@@ -59,14 +62,15 @@
 
     const commit = debounce(
         () => {
-            if (!form.dirty || form.processing) return;
+            if (!form.dirty || form.processing || loading.value) return;
             form.get('/tokens', {
                 replace: true,
                 preserveState: true,
                 preserveScroll: true
             });
         },
-        () => ([form.dirty, form.processing, Object.values(form.data)] as const)[0]
+        () =>
+            ([form.dirty, form.processing, Object.values(form.data)] as const)[0] && !loading.value
     );
 
     onMount(() => {
@@ -88,19 +92,77 @@
     breadcrumbs={[{ label: 'API Tokens', href: '/tokens' }]}
     bind:search={form.data.q}
     searchable
+    pagination={tokens}
+    onpageclick={(page) => {
+        form.data.page = page;
+        commit();
+    }}
 >
-    <Table.Root>
-        <Table.Header>
+    {#snippet actions()}
+        <Separator orientation="vertical" />
+        <Button variant="ghost" size="lg" class="rounded-none h-full" disabled={loading.value}>
+            Create Token
+        </Button>
+    {/snippet}
+    <Table.Root class="h-full">
+        <Table.Header class="sticky top-0">
             <Table.Row>
-                <Table.Head>#</Table.Head>
-                <Table.Head>Token Name</Table.Head>
-                <Table.Head>Created At</Table.Head>
-                <Table.Head>Last Used</Table.Head>
-                <Table.Head>Expires At</Table.Head>
+                <Table.Head class="w-0">
+                    <TableSortCol column="id" bind:value={form.data.sort} onclick={commit} />
+                </Table.Head>
+                <Table.Head>
+                    <TableSortCol
+                        name="Token Name"
+                        column="name"
+                        bind:value={form.data.sort}
+                        onclick={commit}
+                    />
+                </Table.Head>
+                <Table.Head>
+                    <TableSortCol
+                        name="Last Used At"
+                        column="last_used_at"
+                        bind:value={form.data.sort}
+                        onclick={commit}
+                    />
+                </Table.Head>
+                <Table.Head>
+                    <TableSortCol
+                        name="Expires At"
+                        column="expires_at"
+                        bind:value={form.data.sort}
+                        onclick={commit}
+                    />
+                </Table.Head>
+                <Table.Head>
+                    <TableSortCol
+                        name="Created At"
+                        column="created_at"
+                        bind:value={form.data.sort}
+                        onclick={commit}
+                    />
+                </Table.Head>
                 <Table.Head></Table.Head>
             </Table.Row>
         </Table.Header>
-        <Table.Body></Table.Body>
+        <Table.Body>
+            {#each tokens.data as token}
+                <Table.Row>
+                    <Table.Cell class="w-0 text-muted-foreground">#</Table.Cell>
+                    <Table.Cell>{token.name}</Table.Cell>
+                    <Table.Cell>{token.last_used_at}</Table.Cell>
+                    <Table.Cell>{token.expires_at}</Table.Cell>
+                    <Table.Cell>{token.created_at}</Table.Cell>
+                    <Table.Cell class="w-0"></Table.Cell>
+                </Table.Row>
+            {:else}
+                <Table.Row>
+                    <Table.Cell colspan={6} class="text-center h-max text-muted-foreground py-8">
+                        No tokens found
+                    </Table.Cell>
+                </Table.Row>
+            {/each}
+        </Table.Body>
     </Table.Root>
 </DashboardMain>
 
