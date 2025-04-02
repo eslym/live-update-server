@@ -13,6 +13,7 @@
     import { Button } from '$lib/components/ui/button';
     import { loading } from '$lib/loading.svelte';
     import DashboardMain from '$lib/components/DashboardMain.svelte';
+    import { first_layer_dropdown } from '$lib/breadcrumbs';
 
     type _keep = [typeof InputOTP];
 
@@ -61,7 +62,14 @@
 
 <DashboardMain
     title="Setup 2FA"
-    breadcrumbs={[{ label: '2FA' }, { label: 'Setup', href: '/2fa/setup' }]}
+    breadcrumbs={[
+        {
+            label: 'Profile',
+            dropdown: first_layer_dropdown('profile')
+        },
+        { label: '2FA' },
+        { label: 'Setup', href: '/2fa/setup' }
+    ]}
 >
     <div class="w-full min-h-full flex items-center justify-center px-4 py-2">
         <div

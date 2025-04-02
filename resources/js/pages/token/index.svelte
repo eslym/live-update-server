@@ -13,7 +13,7 @@
     import { useForm } from '@/inertia';
     import { debounce } from '$lib/debounce.svelte';
     import DashboardMain from '$lib/components/DashboardMain.svelte';
-    import TableSortCol from '$lib/dialogs/TableSortCol.svelte';
+    import TableSortCol from '$lib/components/TableSortCol.svelte';
     import { loading } from '$lib/loading.svelte';
     import { Separator } from '$lib/components/ui/separator';
     import { parseAbsoluteToLocal } from '@internationalized/date';
@@ -21,6 +21,8 @@
     import { Trash2Icon } from '@lucide/svelte';
     import { SvelteSet } from 'svelte/reactivity';
     import CreateTokenDialog from '$lib/dialogs/CreateTokenDialog.svelte';
+    import { first_layer_dropdown } from '$lib/breadcrumbs';
+    import TableFilterDropdown from '$lib/components/TableFilterDropdown.svelte';
 
     type _keep = [typeof Table, typeof Dialog];
 
@@ -40,7 +42,7 @@
                 params: {
                     q: string;
                     use: 'used' | 'unused' | '';
-                    expired: 'expired' | 'active' | 'permanent' | '';
+                    exp: 'expired' | 'active' | 'permanent' | '';
                     sort: string;
                 };
             }
@@ -99,7 +101,12 @@
 
 <DashboardMain
     title="API Tokens"
-    breadcrumbs={[{ label: 'API Tokens', href: '/tokens' }]}
+    breadcrumbs={[
+        {
+            label: 'Tokens',
+            dropdown: first_layer_dropdown('tokens')
+        }
+    ]}
     bind:search={form.data.q}
     searchable
     pagination={tokens}
@@ -119,8 +126,8 @@
             </Dialog.Trigger>
         </CreateTokenDialog>
     {/snippet}
-    <Table.Root class="h-full">
-        <Table.Header class="sticky top-0">
+    <Table.Root>
+        <Table.Header>
             <Table.Row>
                 <Table.Head class="w-0">#</Table.Head>
                 <Table.Head>
@@ -132,20 +139,43 @@
                     />
                 </Table.Head>
                 <Table.Head class="w-0 text-center">
-                    <TableSortCol
-                        name="Last Used At"
-                        column="last_used_at"
-                        bind:value={form.data.sort}
-                        onclick={commit}
-                    />
+                    <div class="flex flex-row items-center justify-center gap-0.5">
+                        <TableSortCol
+                            name="Last Used At"
+                            column="last_used_at"
+                            bind:value={form.data.sort}
+                            onclick={commit}
+                        />
+                        <TableFilterDropdown
+                            bind:value={form.data.use}
+                            options={[
+                                { label: 'All', value: '' },
+                                { label: 'Used', value: 'used' },
+                                { label: 'Unused', value: 'unused' }
+                            ]}
+                            onchanged={commit}
+                        />
+                    </div>
                 </Table.Head>
                 <Table.Head class="w-0 text-center">
-                    <TableSortCol
-                        name="Expires At"
-                        column="expires_at"
-                        bind:value={form.data.sort}
-                        onclick={commit}
-                    />
+                    <div class="flex flex-row items-center justify-center gap-0.5">
+                        <TableSortCol
+                            name="Expires At"
+                            column="expires_at"
+                            bind:value={form.data.sort}
+                            onclick={commit}
+                        />
+                        <TableFilterDropdown
+                            bind:value={form.data.exp}
+                            options={[
+                                { label: 'All', value: '' },
+                                { label: 'Expired', value: 'expired' },
+                                { label: 'Active', value: 'active' },
+                                { label: 'Permanent', value: 'permanent' }
+                            ]}
+                            onchanged={commit}
+                        />
+                    </div>
                 </Table.Head>
                 <Table.Head class="w-0 text-center">
                     <TableSortCol
@@ -159,7 +189,7 @@
             </Table.Row>
         </Table.Header>
         <Table.Body>
-            {#each tokens.data as token}
+            {#each tokens.data as token (token.id)}
                 <Table.Row>
                     <Table.Cell class="w-max text-center text-muted-foreground">#</Table.Cell>
                     <Table.Cell>{token.name}</Table.Cell>

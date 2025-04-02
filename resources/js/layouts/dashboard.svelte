@@ -158,7 +158,7 @@
             </Dropdown.Root>
         </Sidebar.Footer>
     </Sidebar.Root>
-    <Sidebar.Inset>
+    <Sidebar.Inset class="peer-data-[variant=inset]:max-h-[calc(100svh-theme(spacing.4))]">
         {@render children()}
     </Sidebar.Inset>
 </Sidebar.Provider>

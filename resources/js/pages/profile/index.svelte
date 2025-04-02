@@ -15,6 +15,7 @@
     import FieldError from '$lib/components/FieldError.svelte';
     import Remove2FADialog from '$lib/dialogs/Remove2FADialog.svelte';
     import DashboardMain from '$lib/components/DashboardMain.svelte';
+    import { first_layer_dropdown } from '$lib/breadcrumbs';
 
     type _keep = [typeof Dialog];
 
@@ -65,7 +66,15 @@
     });
 </script>
 
-<DashboardMain title="Profile" breadcrumbs={[{ label: 'Profile', href: '/profile' }]}>
+<DashboardMain
+    title="Profile"
+    breadcrumbs={[
+        {
+            label: 'Profile',
+            dropdown: first_layer_dropdown('profile')
+        }
+    ]}
+>
     <div class="p-8">
         <form
             class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2 max-w-lg"

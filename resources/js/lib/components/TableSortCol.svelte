@@ -38,7 +38,7 @@
     size="sm"
     class={className}
 >
-    <Icon class="w-4 h-4" />
+    <Icon class="size-4" />
     {#if children}
         {@render children()}
     {:else}

@@ -48,7 +48,7 @@ class TokenController extends Controller
             $keywords = preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY);
             $query->where(function ($query) use ($keywords) {
                 foreach ($keywords as $keyword) {
-                    $query->orWhere('name', 'like', $keyword);
+                    $query->where('name', 'like', $keyword);
                 }
             });
         }
@@ -57,7 +57,7 @@ class TokenController extends Controller
 
         return inertia('token/index', [
             'title' => 'API Tokens',
-            'tokens' => fn() => TokenResource::collection($query->paginate(20))
+            'tokens' => fn() => TokenResource::collection($query->paginate())
                 ->additional([
                     'meta' => [
                         'params' => [
@@ -84,6 +84,11 @@ class TokenController extends Controller
         if ($data['expires_at']) {
             $data['expires_at'] = Carbon::parse($data['expires_at'], Utils::getClientTimezone())
                 ->timezone(config('app.timezone'));
+            if($data['expires_at']->isBefore(Carbon::now())){
+                return redirect()->back()->withErrors([
+                    'expires_at' => 'Expiration date must be in the future.',
+                ]);
+            }
         }
 
         $token = $client->createToken(

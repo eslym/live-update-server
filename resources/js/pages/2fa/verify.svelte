@@ -12,6 +12,7 @@
     import { Button } from '$lib/components/ui/button';
     import FieldError from '$lib/components/FieldError.svelte';
     import DashboardMain from '$lib/components/DashboardMain.svelte';
+    import { first_layer_dropdown } from '$lib/breadcrumbs';
 
     type _keep = [typeof Tabs, typeof InputOTP, typeof Card];
 
@@ -27,7 +28,14 @@
 
 <DashboardMain
     title="Verify 2FA"
-    breadcrumbs={[{ label: '2FA' }, { label: 'Verify', href: '/2fa/verify' }]}
+    breadcrumbs={[
+        {
+            label: 'Profile',
+            dropdown: first_layer_dropdown('profile')
+        },
+        { label: '2FA' },
+        { label: 'Verify', href: '/2fa/verify' }
+    ]}
 >
     <div class="w-full min-h-full flex items-center justify-center px-4 py-2">
         <Tabs.Root bind:value={form.data.type} class="contents">
@@ -37,8 +45,9 @@
                         <Card.Title class="grid grid-cols-[1fr,auto]">
                             <span class="flex flex-row items-center text-lg">Verify With</span>
                             <Tabs.List class="grid w-full grid-cols-2">
-                                <Tabs.Trigger value="otp" disabled={loading.value}>OTP</Tabs.Trigger
-                                >
+                                <Tabs.Trigger value="otp" disabled={loading.value}
+                                    >OTP
+                                </Tabs.Trigger>
                                 <Tabs.Trigger value="recovery" disabled={loading.value}
                                     >Recovery Code
                                 </Tabs.Trigger>

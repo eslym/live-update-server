@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Lib\Utils;
 use App\Models\User;
 use App\Rules\UniqueRule;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,8 +18,7 @@ class AccountController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        /** @var LengthAwarePaginator $accounts */
-        $accounts = User::query()
+        $query = User::query()
             ->select([
                 'id',
                 'nanoid',
@@ -28,13 +27,37 @@ class AccountController extends Controller
                 'is_superadmin',
                 'google2fa_secret',
                 'created_at',
-            ])
-            ->paginate(15);
+            ]);
+
+        if ($search = $request->query->getString('q')) {
+            $keywords = preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY);
+            $query->where(function ($query) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $query->where(
+                        fn($query) => $query->where('name', 'like', $keyword)
+                            ->orWhere('email', 'like', $keyword)
+                    );
+                }
+            });
+        }
+
+        $sort = Utils::makeSort($query, ['name', 'email', 'created_at']);
+
+        $accounts = UserResource::collection(
+            $query->paginate(15)
+        )->additional([
+            'meta' => [
+                'params' => [
+                    'sort' => $sort,
+                    'q' => $search,
+                ],
+            ]
+        ]);
 
         $can_create = $user->is_superadmin;
 
         return inertia('account/index', [
-            'accounts' => UserResource::collection($accounts),
+            'accounts' => $accounts,
             'can_create' => $can_create,
         ]);
     }
@@ -62,7 +85,6 @@ class AccountController extends Controller
         }
 
         User::create($data);
-
 
         return redirect()->back()
             ->with('toast', [
