@@ -1,21 +1,25 @@
 <script lang="ts" module>
-    export { default as layout } from '@/layouts/dashboard.svelte';
+    export {default as layout} from '@/layouts/dashboard.svelte';
 </script>
 
 <script lang="ts">
     import * as Table from '$lib/components/ui/table';
     import * as Dialog from '$lib/components/ui/dialog';
-    import { onMount } from 'svelte';
-    import { router } from '@inertiajs/core';
-    import { toast } from 'svelte-sonner';
-    import { Button, buttonVariants } from '$lib/components/ui/button';
-    import { Input } from '$lib/components/ui/input';
-    import { useForm } from '@/inertia';
-    import { debounce } from '$lib/debounce.svelte';
+    import {onMount} from 'svelte';
+    import {router} from '@inertiajs/core';
+    import {toast} from 'svelte-sonner';
+    import {Button, buttonVariants} from '$lib/components/ui/button';
+    import {Input} from '$lib/components/ui/input';
+    import {useForm} from '@/inertia';
+    import {debounce} from '$lib/debounce.svelte';
     import DashboardMain from '$lib/components/DashboardMain.svelte';
     import TableSortCol from '$lib/dialogs/TableSortCol.svelte';
-    import { loading } from '$lib/loading.svelte';
-    import { Separator } from '$lib/components/ui/separator';
+    import {loading} from '$lib/loading.svelte';
+    import {Separator} from '$lib/components/ui/separator';
+    import {parseAbsoluteToLocal} from '@internationalized/date';
+    import {dateTimeFormat} from '$lib/utils';
+    import {Trash2Icon} from '@lucide/svelte';
+    import {values} from 'lodash-es';
 
     type _keep = [typeof Table, typeof Dialog];
 
@@ -60,6 +64,8 @@
             return d;
         });
 
+    const deleting = loading.local();
+
     const commit = debounce(
         () => {
             if (!form.dirty || form.processing || loading.value) return;
@@ -99,7 +105,7 @@
     }}
 >
     {#snippet actions()}
-        <Separator orientation="vertical" />
+        <Separator orientation="vertical"/>
         <Button variant="ghost" size="lg" class="rounded-none h-full" disabled={loading.value}>
             Create Token
         </Button>
@@ -108,7 +114,7 @@
         <Table.Header class="sticky top-0">
             <Table.Row>
                 <Table.Head class="w-0">
-                    <TableSortCol column="id" bind:value={form.data.sort} onclick={commit} />
+                    <TableSortCol column="id" bind:value={form.data.sort} onclick={commit}/>
                 </Table.Head>
                 <Table.Head>
                     <TableSortCol
@@ -148,12 +154,33 @@
         <Table.Body>
             {#each tokens.data as token}
                 <Table.Row>
-                    <Table.Cell class="w-0 text-muted-foreground">#</Table.Cell>
+                    <Table.Cell class="w-max text-center text-muted-foreground">#</Table.Cell>
                     <Table.Cell>{token.name}</Table.Cell>
-                    <Table.Cell>{token.last_used_at}</Table.Cell>
-                    <Table.Cell>{token.expires_at}</Table.Cell>
-                    <Table.Cell>{token.created_at}</Table.Cell>
-                    <Table.Cell class="w-0"></Table.Cell>
+                    <Table.Cell>
+                        {#if token.last_used_at}
+                            {@const last_used = parseAbsoluteToLocal(token.last_used_at)}
+                            {dateTimeFormat.format(last_used.toDate())}
+                        {:else}
+                            <span class="text-muted-foreground">(N/A)</span>
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {#if token.expires_at}
+                            {@const expires = parseAbsoluteToLocal(token.expires_at)}
+                            {dateTimeFormat.format(expires.toDate())}
+                        {:else}
+                            <span class="text-muted-foreground">(N/A)</span>
+                        {/if}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {@const created = parseAbsoluteToLocal(token.created_at)}
+                        {dateTimeFormat.format(created.toDate())}
+                    </Table.Cell>
+                    <Table.Cell class="w-0">
+                        <Button size="icon" variant="ghost">
+                            <Trash2Icon class="size-4"/>
+                        </Button>
+                    </Table.Cell>
                 </Table.Row>
             {:else}
                 <Table.Row>
@@ -175,7 +202,7 @@
                 place, it will not be shown again.
             </Dialog.Description>
         </Dialog.Header>
-        <Input readonly value={recent_token} />
+        <Input readonly value={recent_token}/>
         <Dialog.Footer>
             <Button
                 onclick={() => {
@@ -199,3 +226,36 @@
         </Dialog.Footer>
     </Dialog.Content>
 </Dialog.Root>
+
+{#snippet deleteDialog(id: number)}
+    <Dialog.Root>
+        <Dialog.Trigger class={buttonVariants({ variant: 'ghost', size: 'icon' })}>
+            <Trash2Icon class="size-4"/>
+        </Dialog.Trigger>
+        <Dialog.Content>
+            <Dialog.Header>
+                <Dialog.Title>Delete Token</Dialog.Title>
+                <Dialog.Description>
+                    Are you sure you want to delete this token? This action cannot be undone.
+                </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
+                <Button
+                    variant="destructive"
+                    onclick={() => {
+                        deleting.value = true;
+                        router.delete(`/tokens/${id}`, {
+                            replace: true,
+                            preserveState: true,
+                            preserveScroll: true,
+                            onFinish() {
+                                deleting.value = false;
+                            }
+                        });
+                    }}
+                >
+                    Delete
+                </Button>
+            </Dialog.Footer>
+    </Dialog.Root>
+{/snippet}

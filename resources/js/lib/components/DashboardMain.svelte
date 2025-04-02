@@ -136,6 +136,6 @@
     {/if}
 </header>
 <Separator />
-<div class="flex-grow overflow-auto @container">
+<div class="flex-grow overflow-auto @container rounded-b-xl">
     {@render children()}
 </div>

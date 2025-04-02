@@ -8,17 +8,17 @@ use Throwable;
 
 final class Utils
 {
-    public static function makeSort(Builder $query, array $fields, ?callable $fallback = null): void
+    public static function makeSort(Builder $query, array $fields, ?callable $fallback = null): string
     {
         $fallback = $fallback ?? fn($q) => $q;
         if (!($sort = request()->query->getString('sort'))) {
             $fallback($query);
-            return;
+            return '';
         }
 
         if (!in_array($sort[0], ['-', '+'])) {
             $fallback($query);
-            return;
+            return '';
         }
         $check = substr($sort, 1);
         $order = str_starts_with($sort, '-') ? 'desc' : 'asc';
@@ -33,12 +33,15 @@ final class Utils
 
         if ($field) {
             $query->orderBy($field, $order);
+            return $sort;
         } else {
             $fallback($query);
+            return '';
         }
     }
 
-    public static function getClientTimezone(): string {
+    public static function getClientTimezone(): string
+    {
         $tz = request()->header('X-Client-Timezone');
         try {
             return CarbonTimeZone::create($tz) ?? config('app.timezone');

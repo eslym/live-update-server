@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export const timeFormat = new DateFormatter('en', {
+export const dateTimeFormat = new DateFormatter('en', {
     hour: 'numeric',
     minute: '2-digit',
     second: '2-digit',

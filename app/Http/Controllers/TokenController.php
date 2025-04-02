@@ -53,7 +53,7 @@ class TokenController extends Controller
             });
         }
 
-        Utils::makeSort($query, ['name', 'expires_at', 'last_used_at', 'created_at']);
+        $sort = Utils::makeSort($query, ['name', 'expires_at', 'last_used_at', 'created_at']);
 
         return inertia('token/index', [
             'title' => 'API Tokens',
@@ -64,7 +64,7 @@ class TokenController extends Controller
                             'use' => $use,
                             'exp' => $exp,
                             'q' => $search,
-                            'sort' => $request->query->getString('sort'),
+                            'sort' => $sort,
                         ]
                     ]
                 ]),
