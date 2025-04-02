@@ -8,10 +8,10 @@ use Throwable;
 
 final class Utils
 {
-    public static function makeSort(Builder $query, array $fields, ?callable $fallback = null): string
+    public static function makeSort(Builder $query, array $fields, string $default = '', ?callable $fallback = null): string
     {
         $fallback = $fallback ?? fn($q) => $q;
-        if (!($sort = request()->query->getString('sort'))) {
+        if (!($sort = request()->query->getString('sort', $default))) {
             $fallback($query);
             return '';
         }

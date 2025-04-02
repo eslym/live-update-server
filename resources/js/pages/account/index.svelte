@@ -72,7 +72,8 @@
             form.get('/accounts', {
                 replace: true,
                 preserveState: true,
-                preserveScroll: true
+                preserveScroll: true,
+                only: ['accounts']
             });
         },
         () =>

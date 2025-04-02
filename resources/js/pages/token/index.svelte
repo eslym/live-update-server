@@ -76,7 +76,8 @@
             form.get('/tokens', {
                 replace: true,
                 preserveState: true,
-                preserveScroll: true
+                preserveScroll: true,
+                only: ['tokens']
             });
         },
         () =>

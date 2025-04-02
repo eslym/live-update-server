@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProjectResource;
+use App\Lib\Utils;
 use App\Models\Project;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
@@ -12,23 +13,46 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProjectController extends Controller
 {
-    public function index(): Responsable
+    public function index(Request $request): Responsable
     {
+        $query = Project::query()->with([
+            'versions' => fn($query) => $query->orderByDesc('created_at')->limit(1)
+                ->select([
+                    'id',
+                    'project_id',
+                    'name',
+                ]),
+        ])->select([
+            'id',
+            'nanoid',
+            'name',
+            'created_at',
+        ]);
+
+        if ($search = $request->query->getString('q')) {
+            $keywords = preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY);
+            $query->where(function ($query) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $query->where(
+                        fn($query) => $query->where('name', 'like', $keyword)
+                            ->orWhere('description', 'like', $keyword)
+                    );
+                }
+            });
+        }
+
+        $sort = Utils::makeSort($query, ['name', 'created_at']);
+
         $projects = ProjectResource::collection(
-            Project::query()->with([
-                'versions' => fn($query) => $query->orderByDesc('created_at')->limit(1)
-                    ->select([
-                        'id',
-                        'project_id',
-                        'name',
-                    ]),
-            ])->select([
-                'id',
-                'nanoid',
-                'name',
-                'created_at',
-            ])->paginate(15)
-        );
+            $query->paginate(15)
+        )->additional([
+            'meta' => [
+                'params' => [
+                    'sort' => $sort,
+                    'q' => $search,
+                ]
+            ]
+        ]);
 
         return inertia('project/index', compact('projects'));
     }

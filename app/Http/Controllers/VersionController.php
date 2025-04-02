@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\VersionResource;
 use App\Models\Project;
 use App\Models\Version;
 use App\Rules\UniqueRule;
@@ -18,8 +19,32 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VersionController extends Controller
 {
-    public function list(Request $request, Project $project): Responsable {
+    public function list(Request $request, Project $project): Responsable
+    {
+        $query = $project->versions()
+            ->select([
+                'id',
+                'nanoid',
+                'project_id',
+                'channel_id',
+                'name',
+                'created_at',
+                'android_available',
+                'android_min',
+                'android_max',
+                'ios_available',
+                'ios_min',
+                'ios_max',
+            ]);
 
+        $versions = VersionResource::collection($query->paginate());
+
+        return inertia('project/versions', [
+            'project' => $project->only([
+                'id', 'nanoid', 'name'
+            ]),
+            'versions' => $versions
+        ]);
     }
 
     /**
