@@ -1,31 +1,32 @@
 <script lang="ts" module>
-    export {default as layout} from '@/layouts/dashboard.svelte';
+    export { default as layout } from '@/layouts/dashboard.svelte';
 </script>
 
 <script lang="ts">
     import * as Table from '$lib/components/ui/table';
     import * as Dialog from '$lib/components/ui/dialog';
-    import {onMount} from 'svelte';
-    import {router} from '@inertiajs/core';
-    import {toast} from 'svelte-sonner';
-    import {Button, buttonVariants} from '$lib/components/ui/button';
-    import {Input} from '$lib/components/ui/input';
-    import {useForm} from '@/inertia';
-    import {debounce} from '$lib/debounce.svelte';
+    import { onMount } from 'svelte';
+    import { router } from '@inertiajs/core';
+    import { toast } from 'svelte-sonner';
+    import { Button, buttonVariants } from '$lib/components/ui/button';
+    import { Input } from '$lib/components/ui/input';
+    import { useForm } from '@/inertia';
+    import { debounce } from '$lib/debounce.svelte';
     import DashboardMain from '$lib/components/DashboardMain.svelte';
     import TableSortCol from '$lib/dialogs/TableSortCol.svelte';
-    import {loading} from '$lib/loading.svelte';
-    import {Separator} from '$lib/components/ui/separator';
-    import {parseAbsoluteToLocal} from '@internationalized/date';
-    import {dateTimeFormat} from '$lib/utils';
-    import {Trash2Icon} from '@lucide/svelte';
-    import {values} from 'lodash-es';
+    import { loading } from '$lib/loading.svelte';
+    import { Separator } from '$lib/components/ui/separator';
+    import { parseAbsoluteToLocal } from '@internationalized/date';
+    import { cn, dateTimeFormat } from '$lib/utils';
+    import { Trash2Icon } from '@lucide/svelte';
+    import { SvelteSet } from 'svelte/reactivity';
+    import CreateTokenDialog from '$lib/dialogs/CreateTokenDialog.svelte';
 
     type _keep = [typeof Table, typeof Dialog];
 
     let {
         tokens,
-        recentlyCreated
+        recentCreated
     }: {
         tokens: Pagination<
             {
@@ -44,10 +45,10 @@
                 };
             }
         >;
-        recentlyCreated: string | null;
+        recentCreated: string | null;
     } = $props();
 
-    let recent_token = recentlyCreated!;
+    let recent_token = recentCreated!;
     let recent_dialog = $state(false);
     let copy_loading = $state(false);
 
@@ -64,6 +65,7 @@
             return d;
         });
 
+    const delete_dialog = new SvelteSet<number>();
     const deleting = loading.local();
 
     const commit = debounce(
@@ -80,8 +82,7 @@
     );
 
     onMount(() => {
-        if (recentlyCreated) {
-            recent_dialog = true;
+        if (recentCreated) {
             router.replace({
                 preserveState: true,
                 props(p) {
@@ -89,6 +90,9 @@
                     return p;
                 }
             });
+            setTimeout(() => {
+                recent_dialog = true;
+            }, 100);
         }
     });
 </script>
@@ -105,17 +109,20 @@
     }}
 >
     {#snippet actions()}
-        <Separator orientation="vertical"/>
-        <Button variant="ghost" size="lg" class="rounded-none h-full" disabled={loading.value}>
-            Create Token
-        </Button>
+        <Separator orientation="vertical" />
+        <CreateTokenDialog>
+            <Dialog.Trigger
+                class={cn(buttonVariants({ variant: 'ghost', size: 'lg' }), 'rounded-none h-full')}
+                disabled={loading.value}
+            >
+                Create Token
+            </Dialog.Trigger>
+        </CreateTokenDialog>
     {/snippet}
     <Table.Root class="h-full">
         <Table.Header class="sticky top-0">
             <Table.Row>
-                <Table.Head class="w-0">
-                    <TableSortCol column="id" bind:value={form.data.sort} onclick={commit}/>
-                </Table.Head>
+                <Table.Head class="w-0">#</Table.Head>
                 <Table.Head>
                     <TableSortCol
                         name="Token Name"
@@ -124,7 +131,7 @@
                         onclick={commit}
                     />
                 </Table.Head>
-                <Table.Head>
+                <Table.Head class="w-0 text-center">
                     <TableSortCol
                         name="Last Used At"
                         column="last_used_at"
@@ -132,7 +139,7 @@
                         onclick={commit}
                     />
                 </Table.Head>
-                <Table.Head>
+                <Table.Head class="w-0 text-center">
                     <TableSortCol
                         name="Expires At"
                         column="expires_at"
@@ -140,7 +147,7 @@
                         onclick={commit}
                     />
                 </Table.Head>
-                <Table.Head>
+                <Table.Head class="w-0 text-center">
                     <TableSortCol
                         name="Created At"
                         column="created_at"
@@ -156,7 +163,7 @@
                 <Table.Row>
                     <Table.Cell class="w-max text-center text-muted-foreground">#</Table.Cell>
                     <Table.Cell>{token.name}</Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell class="w-max text-nowrap text-center">
                         {#if token.last_used_at}
                             {@const last_used = parseAbsoluteToLocal(token.last_used_at)}
                             {dateTimeFormat.format(last_used.toDate())}
@@ -164,7 +171,7 @@
                             <span class="text-muted-foreground">(N/A)</span>
                         {/if}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell class="w-max text-nowrap text-center">
                         {#if token.expires_at}
                             {@const expires = parseAbsoluteToLocal(token.expires_at)}
                             {dateTimeFormat.format(expires.toDate())}
@@ -172,14 +179,12 @@
                             <span class="text-muted-foreground">(N/A)</span>
                         {/if}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell class="w-max text-nowrap text-center">
                         {@const created = parseAbsoluteToLocal(token.created_at)}
                         {dateTimeFormat.format(created.toDate())}
                     </Table.Cell>
                     <Table.Cell class="w-0">
-                        <Button size="icon" variant="ghost">
-                            <Trash2Icon class="size-4"/>
-                        </Button>
+                        {@render deleteDialog(token.id)}
                     </Table.Cell>
                 </Table.Row>
             {:else}
@@ -202,7 +207,7 @@
                 place, it will not be shown again.
             </Dialog.Description>
         </Dialog.Header>
-        <Input readonly value={recent_token}/>
+        <Input readonly value={recent_token} class="font-mono" />
         <Dialog.Footer>
             <Button
                 onclick={() => {
@@ -228,9 +233,21 @@
 </Dialog.Root>
 
 {#snippet deleteDialog(id: number)}
-    <Dialog.Root>
+    <Dialog.Root
+        bind:open={
+            () => delete_dialog.has(id),
+            (val) => {
+                if (deleting.value) return;
+                if (val) {
+                    delete_dialog.add(id);
+                } else {
+                    delete_dialog.delete(id);
+                }
+            }
+        }
+    >
         <Dialog.Trigger class={buttonVariants({ variant: 'ghost', size: 'icon' })}>
-            <Trash2Icon class="size-4"/>
+            <Trash2Icon class="size-4" />
         </Dialog.Trigger>
         <Dialog.Content>
             <Dialog.Header>
@@ -240,6 +257,13 @@
                 </Dialog.Description>
             </Dialog.Header>
             <Dialog.Footer>
+                <Dialog.Close
+                    type="button"
+                    class={buttonVariants({ variant: 'secondary' })}
+                    disabled={loading.value}
+                >
+                    Cancel
+                </Dialog.Close>
                 <Button
                     variant="destructive"
                     onclick={() => {
@@ -250,6 +274,7 @@
                             preserveScroll: true,
                             onFinish() {
                                 deleting.value = false;
+                                delete_dialog.delete(id);
                             }
                         });
                     }}
@@ -257,5 +282,6 @@
                     Delete
                 </Button>
             </Dialog.Footer>
+        </Dialog.Content>
     </Dialog.Root>
 {/snippet}

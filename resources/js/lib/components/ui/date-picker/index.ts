@@ -7,3 +7,4 @@ export { default as Calendar } from './date-picker-calendar.svelte';
 export { default as Content } from './date-picker-content.svelte';
 
 export const Root = DatePicker.Root;
+export const Label = DatePicker.Label;

@@ -11,7 +11,7 @@ import { onDestroy, untrack } from 'svelte';
 import type { ActionReturn } from 'svelte/action';
 import { on } from 'svelte/events';
 
-export type FormDataType = Record<string, FormDataConvertible>;
+export type FormDataType = Record<string, any>;
 type FormOptions = Omit<VisitOptions, 'data'>;
 type FormActionOptions = { method?: Method; url?: string | URL } & FormOptions;
 

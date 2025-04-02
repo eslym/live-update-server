@@ -19,7 +19,9 @@
 
     onMount(() => {
         if (openOnMount) {
-            open = true;
+            setTimeout(() => {
+                open = true;
+            }, 100);
         }
     });
 </script>

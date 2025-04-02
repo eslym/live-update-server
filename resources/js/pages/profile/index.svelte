@@ -51,7 +51,6 @@
 
     onMount(() => {
         if (recovery_codes) {
-            codes_dialog = true;
             router.replace({
                 preserveState: true,
                 props(props) {
@@ -59,6 +58,9 @@
                     return props;
                 }
             });
+            setTimeout(() => {
+                codes_dialog = true;
+            }, 100);
         }
     });
 </script>
