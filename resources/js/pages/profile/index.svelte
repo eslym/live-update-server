@@ -86,7 +86,7 @@
             <div class="grid col-span-2 grid-cols-subgrid gap-y-1.5">
                 <Label for="name" class="flex items-center justify-end">Name</Label>
                 <Input
-                    type="name"
+                    type="text"
                     id="name"
                     bind:value={form.data.name}
                     placeholder={user.name}
