@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $nanoid
@@ -21,9 +21,9 @@ use Illuminate\Support\Carbon;
  * @property string $public_key
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, \App\Models\Channel> $channels
+ * @property-read Collection<int, Channel> $channels
  * @property-read int|null $channels_count
- * @property-read Collection<int, \App\Models\Version> $versions
+ * @property-read Collection<int, Version> $versions
  * @property-read int|null $versions_count
  * @method static Builder<static>|Project newModelQuery()
  * @method static Builder<static>|Project newQuery()

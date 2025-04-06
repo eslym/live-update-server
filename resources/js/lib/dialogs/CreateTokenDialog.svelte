@@ -10,8 +10,6 @@
     import * as DatePicker from '$lib/components/ui/date-picker';
     import type { CalendarDateTime } from '@internationalized/date';
 
-    type _keep = [typeof DatePicker];
-
     let {
         open = $bindable(false),
         children = undefined

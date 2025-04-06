@@ -38,10 +38,10 @@
     size="sm"
     class={className}
 >
-    <Icon class="size-4" />
     {#if children}
         {@render children()}
     {:else}
         {name}
     {/if}
+    <Icon class="size-4" />
 </Button>

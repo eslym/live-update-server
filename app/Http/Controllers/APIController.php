@@ -31,18 +31,23 @@ class APIController extends Controller
         $platform = $query['platform'];
 
         /** @var Builder $source */
-        $source = $query['channel'] ? $query['channel']->versions() :
-            $project->versions()->where('channel_id', null);
+        $source = ($query['channel'] ?? false) ? $query['channel']->versions() :
+            $project->versions()
+                ->leftJoin(
+                    'version_channel',
+                    'versions.id', '=', 'version_channel.version_id'
+                )
+                ->where('version_channel.channel_id', null);
 
         $source->where($platform . '_available', true);
 
         $source->where(
-            fn(Builder $query) => $query->whereNull($platform . '_min')
+            fn(Builder $builder) => $builder->whereNull($platform . '_min')
                 ->orWhere($platform . '_min', '<=', $query['build'])
         );
 
         $source->where(
-            fn(Builder $query) => $query->whereNull($platform . '_max')
+            fn(Builder $builder) => $builder->whereNull($platform . '_max')
                 ->orWhere($platform . '_max', '>', $query['build'])
         );
 
@@ -55,7 +60,7 @@ class APIController extends Controller
         return response()->json([
             'message' => 'Version found',
             'name' => $version->name,
-            'id' => $version->id,
+            'id' => $version->nanoid,
             'url' => route('api.download', [$project, $version]),
             'signature' => $version->signature,
         ]);

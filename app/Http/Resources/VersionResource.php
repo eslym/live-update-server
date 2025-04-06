@@ -21,7 +21,7 @@ class VersionResource extends JsonResource
         return [
             'id' => $this->id,
             'nanoid' => $this->nanoid,
-            'channel' => $this->channel,
+            'channels' => $this->channels->map(fn($ch) => $ch->channel?->name),
             'reqs' => $this->requirements,
             'name' => $this->name,
             'created_at' => $this->created_at,

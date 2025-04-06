@@ -16,15 +16,13 @@
     import TableSortCol from '$lib/components/TableSortCol.svelte';
     import { loading } from '$lib/loading.svelte';
     import { Separator } from '$lib/components/ui/separator';
-    import { parseAbsoluteToLocal } from '@internationalized/date';
-    import { cn, dateTimeFormat } from '$lib/utils';
+    import { cn } from '$lib/utils';
     import { Trash2Icon } from '@lucide/svelte';
-    import { SvelteSet } from 'svelte/reactivity';
     import CreateTokenDialog from '$lib/dialogs/CreateTokenDialog.svelte';
     import { first_layer_dropdown } from '$lib/breadcrumbs';
     import TableFilterDropdown from '$lib/components/TableFilterDropdown.svelte';
-
-    type _keep = [typeof Table, typeof Dialog];
+    import { booleans, timestamp } from '@/lib/utils.svelte';
+    import DeleteDialog from '@/lib/dialogs/DeleteDialog.svelte';
 
     let {
         tokens,
@@ -67,8 +65,7 @@
             return d;
         });
 
-    const delete_dialog = new SvelteSet<number>();
-    const deleting = loading.local();
+    const delete_dialog = booleans();
 
     const commit = debounce(
         () => {
@@ -195,24 +192,13 @@
                     <Table.Cell class="w-max text-center text-muted-foreground">#</Table.Cell>
                     <Table.Cell>{token.name}</Table.Cell>
                     <Table.Cell class="w-max text-nowrap text-center">
-                        {#if token.last_used_at}
-                            {@const last_used = parseAbsoluteToLocal(token.last_used_at)}
-                            {dateTimeFormat.format(last_used.toDate())}
-                        {:else}
-                            <span class="text-muted-foreground">(N/A)</span>
-                        {/if}
+                        {@render timestamp(token.last_used_at)}
                     </Table.Cell>
                     <Table.Cell class="w-max text-nowrap text-center">
-                        {#if token.expires_at}
-                            {@const expires = parseAbsoluteToLocal(token.expires_at)}
-                            {dateTimeFormat.format(expires.toDate())}
-                        {:else}
-                            <span class="text-muted-foreground">(N/A)</span>
-                        {/if}
+                        {@render timestamp(token.expires_at)}
                     </Table.Cell>
                     <Table.Cell class="w-max text-nowrap text-center">
-                        {@const created = parseAbsoluteToLocal(token.created_at)}
-                        {dateTimeFormat.format(created.toDate())}
+                        {@render timestamp(token.created_at)}
                     </Table.Cell>
                     <Table.Cell class="w-0">
                         {@render deleteDialog(token.id)}
@@ -264,55 +250,14 @@
 </Dialog.Root>
 
 {#snippet deleteDialog(id: number)}
-    <Dialog.Root
-        bind:open={
-            () => delete_dialog.has(id),
-            (val) => {
-                if (deleting.value) return;
-                if (val) {
-                    delete_dialog.add(id);
-                } else {
-                    delete_dialog.delete(id);
-                }
-            }
-        }
+    <DeleteDialog
+        bind:open={delete_dialog[id]}
+        action="/tokens/{id}"
+        title="Delete Token"
+        description="Are you sure you want to delete this token? This action cannot be undone."
     >
         <Dialog.Trigger class={buttonVariants({ variant: 'ghost', size: 'icon' })}>
             <Trash2Icon class="size-4" />
         </Dialog.Trigger>
-        <Dialog.Content>
-            <Dialog.Header>
-                <Dialog.Title>Delete Token</Dialog.Title>
-                <Dialog.Description>
-                    Are you sure you want to delete this token? This action cannot be undone.
-                </Dialog.Description>
-            </Dialog.Header>
-            <Dialog.Footer>
-                <Dialog.Close
-                    type="button"
-                    class={buttonVariants({ variant: 'secondary' })}
-                    disabled={loading.value}
-                >
-                    Cancel
-                </Dialog.Close>
-                <Button
-                    variant="destructive"
-                    onclick={() => {
-                        deleting.value = true;
-                        router.delete(`/tokens/${id}`, {
-                            replace: true,
-                            preserveState: true,
-                            preserveScroll: true,
-                            onFinish() {
-                                deleting.value = false;
-                                delete_dialog.delete(id);
-                            }
-                        });
-                    }}
-                >
-                    Delete
-                </Button>
-            </Dialog.Footer>
-        </Dialog.Content>
-    </Dialog.Root>
+    </DeleteDialog>
 {/snippet}

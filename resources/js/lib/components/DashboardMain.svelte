@@ -18,8 +18,6 @@
     import { cn } from '$lib/utils';
     import { inertia } from '@/inertia';
 
-    type _keep = [typeof Sidebar, typeof Breadcrumb, typeof Dropdown];
-
     type BreadcrumbItem = {
         label: string;
     } & (
@@ -76,7 +74,7 @@
 </svelte:head>
 
 <div class="flex-grow grid grid-rows-[auto,auto,1fr] max-h-full">
-    <header class={['flex flex-row items-stretch last:*:!rounded-tr-xl', searchable || 'pr-4']}>
+    <header class={['flex flex-row items-stretch last:*:!rounded-tr-xl']}>
         <Breadcrumb.Root>
             <Breadcrumb.List class="pl-4 pr-16 py-2">
                 <Breadcrumb.Item>

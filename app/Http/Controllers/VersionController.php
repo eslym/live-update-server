@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\VersionResource;
+use App\Lib\Utils;
 use App\Models\Project;
 use App\Models\Version;
+use App\Models\VersionChannel;
+use App\Rules\ExistsRule;
+use App\Rules\FindRule;
 use App\Rules\UniqueRule;
 use App\Rules\VersionRequirementsRule;
 use Illuminate\Contracts\Support\Responsable;
@@ -21,12 +25,13 @@ class VersionController extends Controller
 {
     public function list(Request $request, Project $project): Responsable
     {
+        $channels = $project->channels()->get();
         $query = $project->versions()
+            ->with(['channels', 'channels.channel:id,name'])
             ->select([
                 'id',
                 'nanoid',
                 'project_id',
-                'channel_id',
                 'name',
                 'created_at',
                 'android_available',
@@ -37,9 +42,29 @@ class VersionController extends Controller
                 'ios_max',
             ]);
 
-        $versions = VersionResource::collection($query->paginate());
+        if ($search = $request->query->getString('q')) {
+            $keywords = preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY);
+            $query->where(function ($query) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $query->where('name', 'like', $keyword);
+                }
+            });
+        }
+
+        $sort = Utils::makeSort($query, ['name', 'created_at'], '-created_at');
+
+        $versions = VersionResource::collection($query->paginate())
+            ->additional([
+                'meta' => [
+                    'params' => [
+                        'sort' => $sort,
+                        'q' => $search,
+                    ]
+                ],
+            ]);
 
         return inertia('project/versions', [
+            'channels' => $channels,
             'project' => $project->only([
                 'id', 'nanoid', 'name'
             ]),
@@ -58,6 +83,11 @@ class VersionController extends Controller
                 'string',
                 UniqueRule::make(Version::class, 'name')
                     ->where('project_id', $project->id)
+            ],
+            'channels' => ['required', 'array', 'min:1'],
+            'channels.*' => [
+                'nullable', 'string', 'regex:/^[a-z0-9\-]+$/',
+                FindRule::make($project->channels(), 'name')
             ],
             'reqs' => ['required', new VersionRequirementsRule()],
             'bundle' => [],
@@ -97,17 +127,24 @@ class VersionController extends Controller
 
         $data['signature'] = base64_encode($signature);
 
-        $project->versions()->create([
-            ...$validator->validate(),
-            'android_available' => is_array($data->get('reqs.android')),
-            'android_min' => $data->get('reqs.android.min'),
-            'android_max' => $data->get('reqs.android.max'),
-            'ios_available' => is_array($data->get('reqs.ios')),
-            'ios_min' => $data->get('reqs.ios.min'),
-            'ios_max' => $data->get('reqs.ios.max'),
+        $version = $project->versions()->create([
+            ...$data->except(['channels', 'bundle_files', 'reqs'])->toArray(),
+            'android_available' => is_array(data_get($data, 'reqs.android')),
+            'android_min' => data_get($data, 'reqs.android.min'),
+            'android_max' => data_get($data, 'reqs.android.max'),
+            'ios_available' => is_array(data_get($data, 'reqs.ios')),
+            'ios_min' => data_get($data, 'reqs.ios.min'),
+            'ios_max' => data_get($data, 'reqs.ios.max'),
         ]);
 
-        return redirect()->route('project.view', $project)
+        $channels = collect($data->get('channels'))->map(fn($ch) => [
+            'version_id' => $version->id,
+            'channel_id' => $ch?->id,
+        ])->toArray();
+
+        VersionChannel::insert($channels);
+
+        return redirect()->back()
             ->with('toast', [
                 'type' => 'success',
                 'title' => 'Version created successfully',
@@ -124,18 +161,32 @@ class VersionController extends Controller
                     ->where('project_id', $project->id)
                     ->where('id', '!=', $version->id)
             ],
+            'channels' => ['nullable', 'array', 'min:1'],
+            'channels.*' => [
+                'nullable', 'string', 'regex:/^[a-z0-9\-]+$/',
+                FindRule::make($project->channels(), 'name')
+            ],
             'reqs' => ['required', new VersionRequirementsRule()],
         ]));
 
         $version->update([
-            ...$data,
-            'android_available' => is_array($data->get('reqs.android')),
-            'android_min' => $data->get('reqs.android.min'),
-            'android_max' => $data->get('reqs.android.max'),
-            'ios_available' => is_array($data->get('reqs.ios')),
-            'ios_min' => $data->get('reqs.ios.min'),
-            'ios_max' => $data->get('reqs.ios.max'),
+            ...$data->except(['channels', 'reqs'])->toArray(),
+            'android_available' => is_array(data_get($data, 'reqs.android')),
+            'android_min' => data_get($data, 'reqs.android.min'),
+            'android_max' => data_get($data, 'reqs.android.max'),
+            'ios_available' => is_array(data_get($data, 'reqs.ios')),
+            'ios_min' => data_get($data, 'reqs.ios.min'),
+            'ios_max' => data_get($data, 'reqs.ios.max'),
         ]);
+
+        if ($data->has('channels') && $data->get('channels')) {
+            $version->channels()->delete();
+            $channels = collect($data->get('channels'))->map(fn($ch) => [
+                'version_id' => $version->id,
+                'channel_id' => $ch?->id,
+            ])->toArray();
+            VersionChannel::insert($channels);
+        }
 
         return redirect()->back()
             ->with('toast', [

@@ -12,18 +12,15 @@
     import { debounce } from '$lib/debounce.svelte';
     import { loading } from '$lib/loading.svelte';
     import CreateUserDialog from '$lib/dialogs/CreateUserDialog.svelte';
-    import { cn, dateTimeFormat } from '$lib/utils';
-    import { Button, buttonVariants } from '$lib/components/ui/button';
+    import { cn } from '$lib/utils';
+    import { buttonVariants } from '$lib/components/ui/button';
     import { Separator } from '$lib/components/ui/separator';
-    import { parseAbsoluteToLocal } from '@internationalized/date';
     import TableSortCol from '$lib/components/TableSortCol.svelte';
     import { Badge } from '$lib/components/ui/badge/index.js';
     import { EllipsisIcon } from '@lucide/svelte';
     import UpdateUserDialog from '$lib/dialogs/UpdateUserDialog.svelte';
-    import { SvelteSet } from 'svelte/reactivity';
-    import { router } from '@inertiajs/core';
-
-    type _keep = [typeof Dialog, typeof Table, typeof Dropdown];
+    import { booleans, timestamp } from '@/lib/utils.svelte';
+    import DeleteDialog from '@/lib/dialogs/DeleteDialog.svelte';
 
     let {
         accounts,
@@ -61,10 +58,8 @@
             return data;
         });
 
-    const deleting = loading.local();
-
-    const edit_dialog = new SvelteSet<number>();
-    const delete_dialog = new SvelteSet<number>();
+    const edit_dialog = booleans();
+    const delete_dialog = booleans();
 
     const commit = debounce(
         () => {
@@ -154,8 +149,7 @@
                         </Badge>
                     </Table.Head>
                     <Table.Cell class="text-nowrap text-center">
-                        {@const created = parseAbsoluteToLocal(account.created_at)}
-                        {dateTimeFormat.format(created.toDate())}
+                        {@render timestamp(account.created_at)}
                     </Table.Cell>
                     {#if can_create}
                         <Table.Cell>
@@ -167,24 +161,17 @@
                                     <EllipsisIcon class="size-4" />
                                 </Dropdown.Trigger>
                                 <Dropdown.Content>
-                                    <Dropdown.Item onclick={() => edit_dialog.add(account.id)}>
+                                    <Dropdown.Item onclick={() => (edit_dialog[account.id] = true)}>
                                         Edit
                                     </Dropdown.Item>
-                                    <Dropdown.Item onclick={() => delete_dialog.add(account.id)}>
+                                    <Dropdown.Item
+                                        onclick={() => (delete_dialog[account.id] = true)}
+                                    >
                                         Delete
                                     </Dropdown.Item>
                                 </Dropdown.Content>
                             </Dropdown.Root>
-                            <UpdateUserDialog
-                                {account}
-                                bind:open={
-                                    () => edit_dialog.has(account.id),
-                                    (val) => {
-                                        if (val) edit_dialog.add(account.id);
-                                        else edit_dialog.delete(account.id);
-                                    }
-                                }
-                            />
+                            <UpdateUserDialog {account} bind:open={edit_dialog[account.id]} />
                             {@render deleteDialog(account)}
                         </Table.Cell>
                     {/if}
@@ -204,52 +191,10 @@
 </DashboardMain>
 
 {#snippet deleteDialog(account: (typeof accounts.data)[0])}
-    <Dialog.Root
-        bind:open={
-            () => delete_dialog.has(account.id),
-            (val) => {
-                if (deleting.value) return;
-                if (val) {
-                    delete_dialog.add(account.id);
-                } else {
-                    delete_dialog.delete(account.id);
-                }
-            }
-        }
-    >
-        <Dialog.Content>
-            <Dialog.Header>
-                <Dialog.Title>Delete User: {account.name}</Dialog.Title>
-                <Dialog.Description>
-                    Are you sure you want to delete this user? This action cannot be undone.
-                </Dialog.Description>
-            </Dialog.Header>
-            <Dialog.Footer>
-                <Dialog.Close
-                    type="button"
-                    class={buttonVariants({ variant: 'secondary' })}
-                    disabled={loading.value}
-                >
-                    Cancel
-                </Dialog.Close>
-                <Button
-                    variant="destructive"
-                    onclick={() => {
-                        deleting.value = true;
-                        router.delete(`/accounts/${account.nanoid}`, {
-                            replace: true,
-                            preserveState: true,
-                            preserveScroll: true,
-                            onFinish() {
-                                deleting.value = false;
-                                delete_dialog.delete(account.id);
-                            }
-                        });
-                    }}
-                >
-                    Delete
-                </Button>
-            </Dialog.Footer>
-        </Dialog.Content>
-    </Dialog.Root>
+    <DeleteDialog
+        bind:open={delete_dialog[account.id]}
+        action="/accounts/{account.nanoid}"
+        title="Delete User: {account.name}"
+        description="Are you sure you want to delete this user? This action cannot be undone."
+    />
 {/snippet}

@@ -73,7 +73,7 @@
                         bind:value={form.data.private_key}
                         disabled={loading.value}
                         placeholder="Leave empty to generate a new key"
-                        class="font-mono"
+                        class="font-mono text-nowrap"
                         rows={5}
                     />
                     <FieldError error={form.errors.private_key} />

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordResetController;
@@ -54,6 +55,11 @@ Route::middleware(['auth'])->group(function () {
             ->name('project.update');
         Route::delete('/projects/{project}', [ProjectController::class, 'delete'])
             ->name('project.delete');
+
+        Route::post('/projects/{project}/channels', [ChannelController::class, 'create'])
+            ->name('project.channel.create');
+        Route::delete('/projects/{project}/channels/{channel}', [ChannelController::class, 'delete'])
+            ->name('project.channel.delete');
 
         Route::get('/projects/{project}/versions', [VersionController::class, 'list'])
             ->name('project.version.index');

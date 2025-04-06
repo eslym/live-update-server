@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Models\Concerns\HasNanoId;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -15,7 +17,6 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $nanoid
  * @property int $project_id
- * @property int|null $channel_id
  * @property string $name
  * @property string $path
  * @property string|null $signature
@@ -27,7 +28,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $ios_max
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Channel|null $channel
+ * @property-read Collection<int, VersionChannel> $channels
+ * @property-read int|null $channels_count
  * @property-read array $requirements
  * @property-read Project $project
  * @method static Builder<static>|Version newModelQuery()
@@ -40,7 +42,7 @@ class Version extends Model
     use HasNanoId;
 
     protected $fillable = [
-        'name', 'project_id', 'channel_id', 'path', 'signature',
+        'name', 'project_id', 'path', 'signature',
         'android_available', 'ios_available',
         'android_min', 'android_max', 'ios_min', 'ios_max'
     ];
@@ -50,9 +52,9 @@ class Version extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function channel(): BelongsTo
+    public function channels(): HasMany
     {
-        return $this->belongsTo(Channel::class);
+        return $this->hasMany(VersionChannel::class);
     }
 
     public function getRequirementsAttribute(): array

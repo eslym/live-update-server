@@ -60,7 +60,7 @@ class ProjectController extends Controller
     public function view(Project $project): Responsable
     {
         $versions = $project->versions()->count();
-        $channels = $project->channels()->count();
+        $channels = $project->channels()->get();
 
         return inertia('project/view', [
             ...compact('versions', 'channels'),
@@ -148,7 +148,7 @@ class ProjectController extends Controller
 
         $project->delete();
 
-        return redirect()->back()
+        return redirect()->route('project.index')
             ->with('alert', [
                 'title' => 'Success',
                 'content' => 'Project deleted successfully',

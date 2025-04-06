@@ -34,7 +34,7 @@ class VersionRequirementsRule implements ValidationRule, ValidatorAwareRule
                 }
             }
         }
-        if (!is_array($value['android']) && !is_array($value['ios'])) {
+        if (!is_array($value['android'] ?? null) && !is_array($value['ios'] ?? null)) {
             $fail("At least one platform must be specified");
         }
     }

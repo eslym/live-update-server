@@ -17,8 +17,6 @@
     import DashboardMain from '$lib/components/DashboardMain.svelte';
     import { first_layer_dropdown } from '$lib/breadcrumbs';
 
-    type _keep = [typeof Dialog];
-
     let { user, recovery_codes }: { user: User; recovery_codes: string[] | null } = $props();
 
     let display_codes = $state(recovery_codes ?? []);

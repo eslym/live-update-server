@@ -14,8 +14,6 @@
     import DashboardMain from '$lib/components/DashboardMain.svelte';
     import { first_layer_dropdown } from '$lib/breadcrumbs';
 
-    type _keep = [typeof Tabs, typeof InputOTP, typeof Card];
-
     let { debug_code }: { debug_code: string } = $props();
 
     const form = useForm({

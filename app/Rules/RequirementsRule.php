@@ -39,7 +39,7 @@ class RequirementsRule implements ValidationRule, ValidatorAwareRule
             ($value['max'] ?? false) &&
             $value['max'] <= $value['min']
         ) {
-            $this->validator->errors()->add($attribute . '.max', 'Must be greater than minimum version.');
+            $this->validator->errors()->add($attribute . '.max', 'Maximum version must be greater than minimum version.');
         }
     }
 

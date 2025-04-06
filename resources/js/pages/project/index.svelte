@@ -7,17 +7,15 @@
     import DashboardMain from '$lib/components/DashboardMain.svelte';
     import { Separator } from '$lib/components/ui/separator';
     import CreateProjectDialog from '$lib/dialogs/CreateProjectDialog.svelte';
-    import { cn, dateTimeFormat } from '$lib/utils';
+    import { cn } from '$lib/utils';
     import { Button, buttonVariants } from '$lib/components/ui/button';
     import { loading } from '$lib/loading.svelte';
     import { useForm } from '@/inertia';
     import { debounce } from '$lib/debounce.svelte';
     import * as Table from '$lib/components/ui/table';
     import TableSortCol from '$lib/components/TableSortCol.svelte';
-    import { parseAbsoluteToLocal } from '@internationalized/date';
     import { ExternalLinkIcon } from '@lucide/svelte';
-
-    type _keep = [typeof Table];
+    import { timestamp } from '@/lib/utils.svelte';
 
     let {
         projects
@@ -141,13 +139,18 @@
                         {/if}
                     </Table.Cell>
                     <Table.Cell class="w-0 text-center text-nowrap">
-                        {@const created = parseAbsoluteToLocal(project.created_at)}
-                        {dateTimeFormat.format(created.toDate())}
+                        {@render timestamp(project.created_at)}
                     </Table.Cell>
                     <Table.Cell class="w-0 text-nowrap">
                         <Button href="/projects/{project.nanoid}" variant="ghost" size="icon">
                             <ExternalLinkIcon class="size-4" />
                         </Button>
+                    </Table.Cell>
+                </Table.Row>
+            {:else}
+                <Table.Row>
+                    <Table.Cell colspan={5} class="text-center h-max text-muted-foreground py-8">
+                        No projects found
                     </Table.Cell>
                 </Table.Row>
             {/each}

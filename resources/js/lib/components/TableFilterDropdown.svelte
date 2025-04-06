@@ -4,8 +4,6 @@
     import { cn } from '$lib/utils';
     import { CheckIcon, FunnelIcon } from '@lucide/svelte';
 
-    type _keep = [typeof Dropdown];
-
     let {
         value = $bindable(),
         options,

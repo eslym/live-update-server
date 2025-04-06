@@ -15,8 +15,6 @@
     import DashboardMain from '$lib/components/DashboardMain.svelte';
     import { first_layer_dropdown } from '$lib/breadcrumbs';
 
-    type _keep = [typeof InputOTP];
-
     let {
         secret,
         qr,

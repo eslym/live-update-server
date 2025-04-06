@@ -45,6 +45,8 @@ export interface InertiaForm<Data extends FormDataType> {
     default: Data;
     errors: Record<string, string | undefined>;
 
+    allErrors(prefix?: string): string[];
+
     transform(callback: (data: Data) => object): this;
 
     reset(...fields: (keyof Data)[]): this;
@@ -134,6 +136,12 @@ function use_form(defaults: { value: any }, rememberKey?: string) {
     let transform: (data: any) => object = (data: any) => data;
 
     let dirty = $derived(!isEqual(data, defaults.value));
+
+    function allErrors(prefix: string = '') {
+        return Object.entries(errors)
+            .filter(([key]) => key.startsWith(prefix))
+            .map(([_, value]) => value!);
+    }
 
     function submit(method: Method, url: string | URL, options: FormOptions = {}) {
         if (processing) throw new FormProcessingError();
@@ -255,6 +263,10 @@ function use_form(defaults: { value: any }, rememberKey?: string) {
         },
         set errors(value: Record<string, string | undefined>) {
             errors = value;
+        },
+        get allErrors() {
+            errors; // Trigger reactivity
+            return allErrors;
         },
         transform(callback: (data: any) => object) {
             transform = callback;

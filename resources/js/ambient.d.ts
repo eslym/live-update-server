@@ -15,6 +15,16 @@ declare global {
         ['2fa_enabled']: boolean;
     }
 
+    interface VersionRange {
+        min?: number | null;
+        max?: number | null;
+    }
+
+    interface VersionRequirements {
+        android?: VersionRange | null;
+        ios?: VersionRange | null;
+    }
+
     interface Pagination<T, A extends Record<string, any> = {}> {
         data: T[];
         meta: {

@@ -8,8 +8,9 @@
     import type { Snippet } from 'svelte';
     import * as Sidebar from '$lib/components/ui/sidebar';
     import * as Dropdown from '$lib/components/ui/dropdown-menu';
+    import * as Dialog from '$lib/components/ui/dialog';
     import { config } from '$lib/config';
-    import { inertia } from '@/inertia';
+    import { inertia, router } from '@/inertia';
     import {
         ChevronRightIcon,
         LaptopMinimalIcon,
@@ -23,8 +24,7 @@
     } from '@lucide/svelte';
     import { local } from '$lib/storage';
     import { loading } from '$lib/loading.svelte';
-
-    type _keep = [typeof Sidebar, typeof Dropdown];
+    import { Button, buttonVariants } from '$lib/components/ui/button';
 
     let {
         route,
@@ -35,6 +35,9 @@
         children: Snippet;
         user: User;
     } = $props();
+
+    let logout_dialog = $state(false);
+    const logging_out = loading.local();
 </script>
 
 <Sidebar.Provider>
@@ -145,13 +148,9 @@
                                 </a>
                             {/snippet}
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                            {#snippet child({ props })}
-                                <a {...props} href="/logout" use:inertia>
-                                    <LogOutIcon class="mr-2" />
-                                    Logout
-                                </a>
-                            {/snippet}
+                        <Dropdown.Item onclick={() => (logout_dialog = true)}>
+                            <LogOutIcon class="mr-2" />
+                            Logout
                         </Dropdown.Item>
                     </Dropdown.Group>
                 </Dropdown.Content>
@@ -162,3 +161,49 @@
         {@render children()}
     </Sidebar.Inset>
 </Sidebar.Provider>
+
+<Dialog.Root
+    bind:open={
+        () => logout_dialog,
+        (val) => {
+            if (!logging_out.value) logout_dialog = val;
+        }
+    }
+>
+    <Dialog.Content>
+        <Dialog.Content>
+            <Dialog.Header>
+                <Dialog.Title>Logout</Dialog.Title>
+                <Dialog.Description>Are you sure you want to logout?</Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
+                <Dialog.Close
+                    type="button"
+                    class={buttonVariants({ variant: 'secondary' })}
+                    disabled={loading.value}
+                >
+                    Cancel
+                </Dialog.Close>
+                <Button
+                    variant="destructive"
+                    onclick={() => {
+                        logging_out.value = true;
+                        router.visit(`/logout`, {
+                            replace: false,
+                            preserveState: false,
+                            preserveScroll: false,
+                            onFinish() {
+                                logging_out.value = false;
+                                logout_dialog = false;
+                            }
+                        });
+                    }}
+                    loading={logging_out.value}
+                    disabled={loading.value}
+                >
+                    Logout
+                </Button>
+            </Dialog.Footer>
+        </Dialog.Content>
+    </Dialog.Content>
+</Dialog.Root>
