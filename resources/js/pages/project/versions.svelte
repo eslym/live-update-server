@@ -233,9 +233,9 @@
         {#if range.min && range.max}
             {range.min} - {range.max}
         {:else if range.min}
-            ≤ {range.min}
+            ≥ {range.min}
         {:else if range.max}
-            ≥ {range.max}
+            ≤ {range.max}
         {:else}
             Any Version
         {/if}
