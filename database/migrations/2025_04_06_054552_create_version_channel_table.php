@@ -27,9 +27,7 @@ return new class extends Migration {
         $records = DB::table('versions')->get(['id', 'channel_id'])
             ->map(fn($version) => [
                 'version_id' => $version->id,
-                'channel_id' => $version->channel_id,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'channel_id' => $version->channel_id
             ]);
         DB::table('version_channel')->insert($records->toArray());
 
