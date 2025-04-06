@@ -14,11 +14,11 @@
     import DashboardMain from '$lib/components/DashboardMain.svelte';
     import { first_layer_dropdown } from '$lib/breadcrumbs';
 
-    let { debug_code }: { debug_code: string } = $props();
+    let { debug_code }: { debug_code: string | null } = $props();
 
     const form = useForm({
         type: 'otp' as 'otp' | 'recovery',
-        otp: debug_code,
+        otp: debug_code ?? '',
         code: ''
     });
     const processing = loading.derived(() => form.processing);
